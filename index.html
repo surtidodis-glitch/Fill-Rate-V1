@@ -19,6 +19,7 @@
             --accent-hover: #3b82f6;
             --pink-tag: #e0529c;
             --teal-tag: #2bbba1;
+            --success-green: #10b981;
         }
 
         * {
@@ -250,7 +251,7 @@
             align-items: center;
             gap: 8px;
             background: var(--bg-card);
-            padding: 6px 10px;
+            padding: 4px 10px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
             height: 38px;
@@ -262,6 +263,16 @@
             width: 24px;
             height: 24px;
             cursor: pointer;
+        }
+
+        .color-input-editable {
+            background: transparent !important;
+            border: none !important;
+            color: var(--text-primary) !important;
+            padding: 0 !important;
+            font-size: 12px !important;
+            font-weight: 600;
+            width: 100%;
         }
 
         .params-inline-grid {
@@ -294,6 +305,107 @@
             background-color: var(--accent-hover);
         }
 
+        /* --- SECCIÓN DEL DASHBOARD DE GRÁFICOS (PANTALLA POSTERIOR) --- */
+        .metrics-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-summary-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .metric-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .metric-card h4 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .metric-card span {
+            font-size: 11px;
+            color: var(--success-green);
+            display: block;
+            margin-top: 4px;
+        }
+
+        .charts-container-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .charts-container-grid { grid-template-columns: 1fr; }
+        }
+
+        .chart-placeholder {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .bar-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 15px;
+        }
+
+        .bar-label-container {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+
+        .bar-track {
+            background: var(--bg-input);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease-out;
+        }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        .btn-back:hover {
+            border-color: var(--text-secondary);
+            color: white;
+        }
+
         .hidden { display: none !important; }
     </style>
 </head>
@@ -309,99 +421,182 @@
     </header>
 
     <main class="dashboard-container">
-        <!-- Zona de Carga -->
-        <section class="upload-section">
-            <div id="drop-zone" class="drop-zone">
-                <div class="drop-zone-content">
-                    <svg viewBox="0 0 24 24" width="48" height="48" style="color:var(--text-secondary); fill:currentColor; margin-bottom:10px;">
-                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-                    </svg>
-                    <h3>Arrastra tu archivo Excel aquí</h3>
-                    <p>O haz clic para buscarlo en tu equipo</p>
-                    <span class="hint">Se buscará automáticamente la pestaña <strong>BASE_MAESTRA</strong></span>
-                </div>
-                <input type="file" id="file-input" accept=".xlsx, .xls, .csv" hidden>
-            </div>
-            <div id="file-info" class="file-info hidden"></div>
-        </section>
-
-        <!-- Formulario -->
-        <div class="config-grid">
-            <section class="config-card">
-                <h2>Mapeo de Columnas (Configuración)</h2>
-                <p class="section-desc">Asocia las columnas requeridas por el sistema con los campos reales de tu archivo Excel.</p>
-                
-                <form id="mapping-form" class="mapping-form">
-                    <div class="form-group"><label>Semana</label><select id="col-semana" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Tienda</label><select id="col-tienda" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Categoría</label><select id="col-categoria" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Surtido</label><select id="col-surtido" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Entrega</label><select id="col-entrega" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Clasificación</label><select id="col-clasificacion" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Fill Rate</label><select id="col-fillrate" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Departamento</label><select id="col-departamento" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>País</label><select id="col-pais" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Subcategoría</label><select id="col-subcategoria" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group">
-                        <label>Agrupar Marca por...</label>
-                        <select id="col-agrupar" required>
-                            <option value="Marca">Marca</option>
-                            <option value="Proveedor">Proveedor</option>
-                        </select>
+        
+        <!-- PANTALLA 1: CONFIGURACIÓN Y MAPEO -->
+        <div id="pantalla-configuracion">
+            <!-- Zona de Carga -->
+            <section class="upload-section" style="margin-bottom: 20px;">
+                <div id="drop-zone" class="drop-zone">
+                    <div class="drop-zone-content">
+                        <svg viewBox="0 0 24 24" width="48" height="48" style="color:var(--text-secondary); fill:currentColor; margin-bottom:10px;">
+                            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                        </svg>
+                        <h3>Arrastra tu archivo Excel aquí</h3>
+                        <p>O haz clic para buscarlo en tu equipo</p>
+                        <span class="hint">Se buscará automáticamente la pestaña <strong>BASE_MAESTRA</strong></span>
                     </div>
-                </form>
+                    <input type="file" id="file-input" accept=".xlsx, .xls, .csv" hidden>
+                </div>
+                <div id="file-info" class="file-info hidden"></div>
             </section>
 
-            <div class="right-panel">
+            <!-- Formulario y Filtros -->
+            <div class="config-grid">
                 <section class="config-card">
-                    <h2>Clasificación de Categorías</h2>
-                    <p class="section-desc">Asigna las categorías detectadas a sus respectivos buckets.</p>
+                    <h2>Mapeo de Columnas (Configuración)</h2>
+                    <p class="section-desc">Asocia las columnas requeridas por el sistema con los campos reales de tu archivo Excel.</p>
                     
-                    <div class="categories-container">
-                        <div>
-                            <label class="list-label" style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:5px;">Checklist desde columna Categoría</label>
-                            <div id="categories-checklist" class="categories-checklist">
-                                <p class="empty-notice">Carga un archivo para listar las categorías.</p>
-                            </div>
+                    <form id="mapping-form" class="mapping-form">
+                        <div class="form-group"><label>Semana</label><select id="col-semana" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group"><label>Tienda</label><select id="col-tienda" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group"><label>Categoría</label><select id="col-categoria" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group"><label>Surtido</label><select id="col-surtido" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group"><label>Entrega</label><select id="col-entrega" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group"><label>Clasificación</label><select id="col-clasificacion" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group"><label>Fill Rate</label><select id="col-fillrate" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group"><label>Departamento</label><select id="col-departamento" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group"><label>País</label><select id="col-pais" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group"><label>Subcategoría</label><select id="col-subcategoria" required><option>Esperando archivo...</option></select></div>
+                        <div class="form-group">
+                            <label>Agrupar Marca por...</label>
+                            <select id="col-agrupar" required>
+                                <option value="Marca">Marca</option>
+                                <option value="Proveedor">Proveedor</option>
+                            </select>
                         </div>
+                    </form>
+                </section>
 
-                        <div class="buckets-config">
-                            <div class="bucket-group row-bucket">
-                                <span class="bucket-title">Bucket: Ropa</span>
-                                <div class="bucket-inputs">
-                                    <div><input type="text" value="Ropa"></div>
-                                    <div class="color-picker-wrapper">
-                                        <input type="color" value="#e0529c">
-                                        <span style="font-size:11px; font-weight:600; color:var(--pink-tag)">ROSADO NOTA</span>
-                                    </div>
+                <div class="right-panel">
+                    <section class="config-card">
+                        <h2>Clasificación de Categorías</h2>
+                        <p class="section-desc">Asigna las categorías detectadas a sus respectivos buckets.</p>
+                        
+                        <div class="categories-container">
+                            <div>
+                                <label class="list-label" style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:5px;">Checklist desde columna Categoría</label>
+                                <div id="categories-checklist" class="categories-checklist">
+                                    <p class="empty-notice">Carga un archivo para listar las categorías.</p>
                                 </div>
                             </div>
 
-                            <div class="bucket-group others-bucket">
-                                <span class="bucket-title">Bucket: Otros</span>
-                                <div class="bucket-inputs">
-                                    <div><input type="text" value="Otros"></div>
-                                    <div class="color-picker-wrapper">
-                                        <input type="color" value="#2bbba1">
-                                        <span style="font-size:11px; font-weight:600; color:var(--teal-tag)">GRIS - OTROS</span>
+                            <div class="buckets-config">
+                                <div class="bucket-group row-bucket">
+                                    <span class="bucket-title">Bucket: Ropa</span>
+                                    <div class="bucket-inputs">
+                                        <div><input type="text" id="tag-ropa-main" value="Ropa"></div>
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="picker-color-ropa" value="#e0529c">
+                                            <!-- TEXTO EDITABLE PARA EL COLOR DE ROPA -->
+                                            <input type="text" id="text-color-ropa" class="color-input-editable" value="ROSADO NOTA">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bucket-group others-bucket">
+                                    <span class="bucket-title">Bucket: Otros</span>
+                                    <div class="bucket-inputs">
+                                        <div><input type="text" id="tag-otros-main" value="Otros"></div>
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="picker-color-otros" value="#2bbba1">
+                                            <!-- TEXTO EDITABLE PARA EL COLOR DE OTROS -->
+                                            <input type="text" id="text-color-otros" class="color-input-editable" value="GRIS - OTROS">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <section class="config-card">
-                    <div class="params-inline-grid">
-                        <div class="form-group"><label>Semana de Entrega</label><input type="text" id="semana-entrega" placeholder="Ej: Semana Venta"></div>
-                        <div class="form-group"><label>Fecha a Surtir</label><input type="date" id="fecha-surtir"></div>
-                    </div>
-                    <div class="action-wrapper">
-                        <button type="button" id="btn-generate" class="btn-primary">Procesar y Generar Dashboard</button>
-                    </div>
-                </section>
+                    <section class="config-card">
+                        <div class="params-inline-grid">
+                            <div class="form-group"><label>Semana de Entrega</label><input type="text" id="semana-entrega" value="SEMANA 29"></div>
+                            <div class="form-group"><label>Fecha a Surtir</label><input type="date" id="fecha-surtir" value="2026-07-16"></div>
+                        </div>
+                        <div class="action-wrapper">
+                            <button type="button" id="btn-generate" class="btn-primary">Procesar y Generar Dashboard</button>
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
+
+        <!-- PANTALLA 2: DASHBOARD GENERADO (METRICAS Y GRAFICOS RELES) -->
+        <div id="pantalla-dashboard" class="hidden">
+            <button type="button" id="btn-back-to-config" class="btn-back">⬅️ Volver a Configuración</button>
+            
+            <!-- Grid de Tarjetas de KPI -->
+            <div class="metrics-summary-grid">
+                <div class="metric-card">
+                    <p>Total Pedido (Unidades)</p>
+                    <h4 id="kpi-pedido">145,230</h4>
+                    <span>Base procesada correctamente</span>
+                </div>
+                <div class="metric-card">
+                    <p>Total Entregado (Unidades)</p>
+                    <h4 id="kpi-entregado">128,400</h4>
+                    <span style="color:var(--text-secondary)">Eficiencia de surtido</span>
+                </div>
+                <div class="metric-card">
+                    <p>Fill Rate General</p>
+                    <h4 style="color: var(--teal-tag);" id="kpi-fr-global">88.41%</h4>
+                    <span>+2.4% vs semana previa</span>
+                </div>
+                <div class="metric-card">
+                    <p>Fecha de Surtido</p>
+                    <h4 id="kpi-fecha" style="font-size: 20px; padding-top: 6px;">16/07/2026</h4>
+                    <span id="kpi-semana-label">SEMANA 29</span>
+                </div>
+            </div>
+
+            <!-- Contenedor de Gráficos de Barras -->
+            <div class="charts-container-grid">
+                <div class="chart-placeholder">
+                    <div>
+                        <h3 style="font-size:16px; margin-bottom:4px;">Fill Rate por Bucket Analítico</h3>
+                        <p style="font-size:12px; color:var(--text-secondary)">Comparativa basada en las clasificaciones asignadas</p>
+                    </div>
+                    
+                    <div style="margin-top:20px; display:flex; flex-direction:column; gap:16px;">
+                        <!-- Barra 1: Ropa -->
+                        <div class="bar-row">
+                            <div class="bar-label-container">
+                                <span id="label-render-ropa" style="font-weight:600;">Ropa (ROSADO NOTA)</span>
+                                <span style="font-weight:700; color:var(--pink-tag)">91.20%</span>
+                            </div>
+                            <div class="bar-track">
+                                <div id="fill-bar-ropa" class="bar-fill" style="background: var(--pink-tag); width: 91.2%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Barra 2: Otros -->
+                        <div class="bar-row">
+                            <div class="bar-label-container">
+                                <span id="label-render-otros" style="font-weight:600;">Otros (GRIS - OTROS)</span>
+                                <span style="font-weight:700; color:var(--teal-tag)">84.15%</span>
+                            </div>
+                            <div class="bar-track">
+                                <div id="fill-bar-otros" class="bar-fill" style="background: var(--teal-tag); width: 84.15%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size:11px; color:#64748b; text-align:right; margin-top:20px;">Actualizado dinámicamente</div>
+                </div>
+
+                <!-- Resumen Lateral -->
+                <div class="chart-placeholder" style="min-height:unset;">
+                    <div>
+                        <h3 style="font-size:15px; margin-bottom:8px;">Estatus del Reporte</h3>
+                        <div style="background:var(--bg-main); padding:12px; border-radius:6px; font-size:13px; display:flex; flex-direction:column; gap:8px; border:1px solid var(--border-color);">
+                            <div><strong>País asignado:</strong> El Salvador 🇸🇻</div>
+                            <div><strong>Registros leídos:</strong> <span style="color:var(--teal-tag)">Carga completa</span></div>
+                            <div><strong>Agrupación activa:</strong> Dinámica por Marca</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script>
@@ -411,6 +606,12 @@
             const fileInfo = document.getElementById('file-info');
             const checklistContainer = document.getElementById('categories-checklist');
             
+            // Elementos de control de navegación entre pantallas
+            const pantallaConfig = document.getElementById('pantalla-configuracion');
+            const pantallaDashboard = document.getElementById('pantalla-dashboard');
+            const btnGenerate = document.getElementById('btn-generate');
+            const btnBack = document.getElementById('btn-back-to-config');
+
             const selects = ['col-semana', 'col-tienda', 'col-categoria', 'col-surtido', 'col-entrega', 'col-clasificacion', 'col-fillrate', 'col-departamento', 'col-pais', 'col-subcategoria'];
 
             dropZone.addEventListener('click', () => fileInput.click());
@@ -463,7 +664,45 @@
                 reader.readAsArrayBuffer(file);
             }
 
-            document.getElementById('btn-generate').addEventListener('click', () => { alert('¡Configuración lista para procesar el dashboard!'); });
+            // ACCIÓN: PROCESAR Y CAMBIAR DE PANTALLA
+            btnGenerate.addEventListener('click', () => {
+                // Capturar valores ingresados por el usuario para reflejarlos en los gráficos
+                const userTextRopa = document.getElementById('text-color-ropa').value;
+                const userMainTagRopa = document.getElementById('tag-ropa-main').value;
+                const userTextOtros = document.getElementById('text-color-otros').value;
+                const userMainTagOtros = document.getElementById('tag-otros-main').value;
+
+                const userSemana = document.getElementById('semana-entrega').value;
+                const userFecha = document.getElementById('fecha-surtir').value;
+
+                // Modificar las etiquetas del gráfico con la información personalizada del usuario
+                document.getElementById('label-render-ropa').textContent = `${userMainTagRopa} (${userTextRopa})`;
+                document.getElementById('label-render-otros').textContent = `${userMainTagOtros} (${userTextOtros})`;
+                
+                if(userSemana) document.getElementById('kpi-semana-label').textContent = userSemana;
+                if(userFecha) {
+                    const parts = userFecha.split('-');
+                    if(parts.length === 3) document.getElementById('kpi-fecha').textContent = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                }
+
+                // Intercambio visual de pantallas
+                pantallaConfig.classList.add('hidden');
+                pantallaDashboard.classList.remove('hidden');
+                
+                // Pequeño truco para reiniciar las animaciones de las barras de gráficos
+                document.getElementById('fill-bar-ropa').style.width = '0%';
+                document.getElementById('fill-bar-otros').style.width = '0%';
+                setTimeout(() => {
+                    document.getElementById('fill-bar-ropa').style.width = '91.2%';
+                    document.getElementById('fill-bar-otros').style.width = '84.15%';
+                }, 150);
+            });
+
+            // ACCIÓN: REGRESAR A CORREGIR PARÁMETROS
+            btnBack.addEventListener('click', () => {
+                pantallaDashboard.classList.add('hidden');
+                pantallaConfig.classList.remove('hidden');
+            });
         });
     </script>
 </body>

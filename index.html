@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FILL RATE Dashboard</title>
-    <!-- Librerías para procesamiento Excel y Gráficos profesionales -->
+    <!-- Librerías de procesamiento de Excel y Gráficos profesionales -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -39,7 +39,7 @@
             overflow-x: hidden;
         }
 
-        /* --- CONTENEDOR DE CONFIGURACIÓN (PANTALLA 1) --- */
+        /* --- PANTALLA 1: CONFIGURACIÓN --- */
         #pantalla-configuracion {
             width: 100%;
             max-width: 1300px;
@@ -183,7 +183,7 @@
             width: 100%;
         }
 
-        /* --- INTERFAZ DEL DASHBOARD REAL (PANTALLA 2) --- */
+        /* --- PANTALLA 2: DASHBOARD INTERACTIVO --- */
         #pantalla-dashboard-real {
             display: flex;
             width: 100%;
@@ -199,6 +199,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            flex-shrink: 0;
         }
 
         .brand-logo {
@@ -235,6 +236,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            transition: all 0.2s;
         }
 
         .menu-item.active, .menu-item:hover {
@@ -242,7 +244,7 @@
             color: var(--text-primary);
         }
 
-        /* Panel de Contenido Principal */
+        /* Contenido Principal */
         .main-content {
             flex: 1;
             padding: 24px;
@@ -263,7 +265,7 @@
             align-items: center;
         }
 
-        /* Tarjetas KPI de tu diseño */
+        /* Tarjetas KPI */
         .kpi-row {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -298,7 +300,7 @@
         }
 
         .kpi-data h4 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
         }
 
@@ -336,7 +338,7 @@
             color: var(--text-primary);
         }
 
-        /* Tabla de Top e Históricos */
+        /* Tablas */
         .table-custom {
             width: 100%;
             border-collapse: collapse;
@@ -372,11 +374,11 @@
 </head>
 <body>
 
-    <!-- ================= PANTALLA 1: CONFIGURACIÓN Y CARGA ================= -->
+    <!-- ================= PANTALLA 1: CONFIGURACIÓN ================= -->
     <div id="pantalla-configuracion">
         <div class="config-header">
             <h1 style="font-size: 26px;">Configuración de Origen de Datos</h1>
-            <p style="color: var(--text-secondary);">Carga tu reporte base de Fill Rate y configura tus buckets para dibujar el Dashboard final.</p>
+            <p style="color: var(--text-secondary);">Carga tu reporte base de Fill Rate y define tus parámetros.</p>
         </div>
 
         <section class="drop-zone" id="drop-zone">
@@ -388,7 +390,6 @@
         <div id="file-info" class="file-info hidden" style="margin-bottom: 20px; background: #111a2e; padding: 10px; border-radius:6px; border-left:4px solid var(--teal-tag);"></div>
 
         <div class="config-grid">
-            <!-- Mapeo -->
             <div class="config-card">
                 <h2>Mapeo de Columnas (Requerido)</h2>
                 <p class="section-desc">Identifica las columnas correctas dentro de tu archivo Excel.</p>
@@ -407,11 +408,10 @@
                 </form>
             </div>
 
-            <!-- Buckets y Etiquetas Editables -->
             <div class="config-card" style="display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
                     <h2>Clasificación Dinámica de Categorías</h2>
-                    <p class="section-desc">Agrupa tus categorías y personaliza las etiquetas de los colores libremente.</p>
+                    <p class="section-desc">Define tus etiquetas y edita los textos de color de manera dinámica.</p>
                     
                     <div class="categories-checklist" id="categories-checklist">
                         <p style="color: var(--text-secondary); text-align:center; padding:20px 0; font-size:13px;">Carga un Excel para ver las categorías.</p>
@@ -448,28 +448,28 @@
     </div>
 
 
-    <!-- ================= PANTALLA 2: DASHBOARD COMPLETO (SITUACIÓN REAL) ================= -->
+    <!-- ================= PANTALLA 2: DASHBOARD COMPLETO ================= -->
     <div id="pantalla-dashboard-real" class="hidden">
         
-        <!-- BARRA LATERAL (SIDEBAR) -->
+        <!-- BARRA LATERAL -->
         <aside class="sidebar">
             <div class="brand-logo">
-                <span style="font-size:24px;">👕</span> FILL RATE <span style="font-size:11px; font-weight:normal; color:var(--text-secondary);">Dashboard</span>
+                <span style="font-size:24px;">👕</span> FILL RATE
             </div>
             
             <nav class="menu-section">
                 <div class="menu-section-title">Análisis</div>
-                <a class="menu-item active">📊 Resumen</a>
+                <a class="menu-item active" id="btn-menu-resumen">📊 Resumen</a>
                 <a class="menu-item" id="btn-reconfigurar">⚙️ Configuración</a>
             </nav>
 
             <nav class="menu-section">
                 <div class="menu-section-title">Por Departamento</div>
-                <a class="menu-item">👗 Ropa</a>
-                <a class="menu-item">👟 Calzado</a>
-                <a class="menu-item">💼 Cartera</a>
-                <a class="menu-item">🏠 Hogar</a>
-                <a class="menu-item">🧸 Juguetes</a>
+                <a class="menu-item filter-dept" data-dept="Ropa">👗 Ropa</a>
+                <a class="menu-item filter-dept" data-dept="Calzado">👟 Calzado</a>
+                <a class="menu-item filter-dept" data-dept="Cartera">💼 Cartera</a>
+                <a class="menu-item filter-dept" data-dept="Hogar">🏠 Hogar</a>
+                <a class="menu-item filter-dept" data-dept="Juguetes">🧸 Juguetes</a>
             </nav>
 
             <div style="margin-top:auto; padding:10px; background:#141f35; border-radius:6px; font-size:11px;">
@@ -478,44 +478,44 @@
             </div>
         </aside>
 
-        <!-- CONTENIDO PRINCIPAL -->
+        <!-- PANEL CENTRAL -->
         <div class="main-content">
             
-            <!-- Filtros Superiores del Dashboard -->
+            <!-- Filtros Superiores Reactivos -->
             <div class="top-filters-bar">
                 <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Semana</label>
-                    <select style="padding:6px; font-size:11px;"><option>W27</option></select>
+                    <select id="filter-semana" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
                 </div>
                 <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">País</label>
-                    <select style="padding:6px; font-size:11px;"><option>El Salvador 🇸🇻</option></select>
+                    <select id="filter-pais" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
                 </div>
                 <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Departamento</label>
-                    <select style="padding:6px; font-size:11px;"><option>Ropa</option></select>
+                    <select id="filter-dept-select" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
                 </div>
                 <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Categoría</label>
-                    <select style="padding:6px; font-size:11px;"><option>Todas</option></select>
+                    <select id="filter-categoria" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
                 </div>
                 <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Subcategoría</label>
-                    <select style="padding:6px; font-size:11px;"><option>Todas</option></select>
+                    <select id="filter-subcategoria" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
                 </div>
                 <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Tienda</label>
-                    <select style="padding:6px; font-size:11px;"><option>Todas</option></select>
+                    <select id="filter-tienda" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
                 </div>
                 <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Clasificación</label>
-                    <select style="padding:6px; font-size:11px;"><option>Todas</option></select>
+                    <select id="filter-clasificacion" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
                 </div>
                 <div>
-                    <button style="background:var(--bg-input); border:1px solid var(--border-color); color:white; padding:8px 12px; border-radius:6px; font-size:11px; cursor:pointer; margin-top:14px;">⚡ Filtros</button>
+                    <button id="btn-reset-filters" style="background:var(--bg-input); border:1px solid var(--border-color); color:white; padding:8px 12px; border-radius:6px; font-size:11px; cursor:pointer; margin-top:14px;">⚡ Reset</button>
                 </div>
             </div>
 
-            <!-- Fila de Tarjetas KPI reales -->
+            <!-- Fila KPIs -->
             <div class="kpi-row">
                 <div class="kpi-card">
                     <div class="kpi-icon-box" style="color:var(--pink-tag);">📦</div>
                     <div class="kpi-data">
                         <p>Surtidos</p>
-                        <h4 id="real-kpi-surtido">8,542</h4>
+                        <h4 id="kpi-surtidos">0</h4>
                         <div class="kpi-trend">vs sem anterior ↑ 4.21%</div>
                     </div>
                 </div>
@@ -523,15 +523,15 @@
                     <div class="kpi-icon-box" style="color:#2563eb;">🚚</div>
                     <div class="kpi-data">
                         <p>Entregado (Unid.)</p>
-                        <h4 id="real-kpi-entregado">23,157</h4>
+                        <h4 id="kpi-entregado">0</h4>
                         <div class="kpi-trend">vs sem anterior ↑ 3.87%</div>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon-box" style="color:var(--teal-tag);">%</div>
                     <div class="kpi-data">
-                        <p>Fill Rate (Pirrate)</p>
-                        <h4 id="real-kpi-fr" style="color:var(--teal-tag)">98.62%</h4>
+                        <p>Fill Rate</p>
+                        <h4 id="kpi-fillrate" style="color:var(--teal-tag)">0.00%</h4>
                         <div class="kpi-trend">vs sem anterior ↑ 2.41%</div>
                     </div>
                 </div>
@@ -539,7 +539,7 @@
                     <div class="kpi-icon-box" style="color:#f59e0b;">🎯</div>
                     <div class="kpi-data">
                         <p>Cumplimiento</p>
-                        <h4>97.18%</h4>
+                        <h4 id="kpi-cumplimiento">0.00%</h4>
                         <div class="kpi-trend">vs sem anterior ↑ 1.92%</div>
                     </div>
                 </div>
@@ -547,29 +547,29 @@
                     <div class="kpi-icon-box">🏪</div>
                     <div class="kpi-data">
                         <p>Tiendas</p>
-                        <h4>12</h4>
+                        <h4 id="kpi-tiendas">0</h4>
                         <div class="kpi-trend" style="color:var(--text-secondary)">Establecido</div>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon-box">🇸🇻</div>
                     <div class="kpi-data">
-                        <p>País</p>
-                        <h4 style="font-size:15px;">El Salvador</h4>
-                        <div class="kpi-trend" style="color:var(--text-secondary)">Central</div>
+                        <p>País Activo</p>
+                        <h4 id="kpi-pais-activo" style="font-size:14px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">Todas</h4>
+                        <div class="kpi-trend" style="color:var(--text-secondary)">Selección</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Fila de Gráficos 1: Línea Temporal + Pastel + Subcategorías -->
+            <!-- Gráficos Fila 1 -->
             <div class="charts-row-1">
                 <div class="panel-card">
-                    <h3>Fill Rate (Pirrate) por Semana</h3>
+                    <h3>Fill Rate por Semana</h3>
                     <div style="height:220px;"><canvas id="chart-fillrate-semana"></canvas></div>
                 </div>
                 <div class="panel-card">
                     <h3>Entregado (Unid.) por Subcategoría</h3>
-                    <div style="height:220px; position:relative;"><canvas id="chart-donut-subcat"></canvas></div>
+                    <div style="height:220px;"><canvas id="chart-donut-subcat"></canvas></div>
                 </div>
                 <div class="panel-card">
                     <h3 id="label-dinamico-bucket">Entregado (Unid.) por Subcategoría (Ropa)</h3>
@@ -577,22 +577,20 @@
                 </div>
             </div>
 
-            <!-- Fila de Gráficos 2: Tablas Top + Clasificación (Unid.) + Detalle -->
+            <!-- Gráficos Fila 2 -->
             <div class="charts-row-2">
                 <div class="panel-card">
-                    <h3>Top 10 Tiendas por Fill Rate (Pirrate)</h3>
+                    <h3>Top 10 Tiendas por Fill Rate</h3>
                     <table class="table-custom" id="top-tiendas-table">
                         <thead>
                             <tr>
                                 <th># Tienda</th>
                                 <th>Entregado (Unid.)</th>
-                                <th>Fill Rate (Pirrate)</th>
+                                <th>Fill Rate</th>
                                 <th>Cumplimiento</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Generado Dinámico -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
                 <div class="panel-card">
@@ -605,10 +603,10 @@
                 </div>
             </div>
 
-            <!-- Detalle de Surtidos Final -->
+            <!-- Detalle de Surtidos -->
             <div class="panel-card" style="margin-top:20px;">
                 <h3>Detalle de Surtidos</h3>
-                <div style="overflow-x:auto;">
+                <div style="overflow-x:auto; max-height: 400px; overflow-y: auto;">
                     <table class="table-custom" id="tabla-surtidos-detalle">
                         <thead>
                             <tr>
@@ -619,13 +617,11 @@
                                 <th>Subcategoría</th>
                                 <th>Surtido</th>
                                 <th>Entregado (Unid.)</th>
-                                <th>Fill Rate (Pirrate)</th>
+                                <th>Fill Rate</th>
                                 <th>Clasificación</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Renglones de Datos Dinámicos -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -633,7 +629,6 @@
         </div>
     </div>
 
-    <!-- CONTROL DE SCRIPT DINÁMICO -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const dropZone = document.getElementById('drop-zone');
@@ -646,19 +641,23 @@
             
             const btnGenerate = document.getElementById('btn-generate');
             const btnReconfig = document.getElementById('btn-reconfigurar');
+            const btnReset = document.getElementById('btn-reset-filters');
+            const btnResumen = document.getElementById('btn-menu-resumen');
 
-            let parsedData = [];
-            const selectIds = ['col-semana', 'col-tienda', 'col-categoria', 'col-surtido', 'col-entrega', 'col-clasificacion', 'col-fillrate', 'col-departamento', 'col-pais', 'col-subcategoria'];
+            let rawExcelData = [];
+            let currentFilteredData = [];
+            let mapping = {};
 
-            // Variables Globales de Gráficos de ChartJS
+            // Referencias a instancias de Charts de ChartJS
             let chartSemana, chartDonut, chartBarsSub, chartClasif, chartCumplimiento;
 
+            // Arrastrar y Soltar Excel
             dropZone.addEventListener('click', () => fileInput.click());
             fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
 
             function handleFile(file) {
                 fileInfo.classList.remove('hidden');
-                fileInfo.textContent = `Leyendo: ${file.name}...`;
+                fileInfo.textContent = `Analizando archivo: ${file.name}...`;
 
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -667,137 +666,312 @@
                         const workbook = XLSX.read(data, { type: 'array' });
                         let sheetName = workbook.SheetNames.find(name => name.toUpperCase() === 'BASE_MAESTRA') || workbook.SheetNames[0];
                         
-                        parsedData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-                        const headers = Object.keys(parsedData[0] || {});
+                        rawExcelData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                        if (!rawExcelData.length) throw new Error("La pestaña seleccionada no contiene registros válidos.");
 
-                        if (!headers.length) throw new Error("Archivo vacío o incorrecto.");
+                        const headers = Object.keys(rawExcelData[0]);
+                        fileInfo.textContent = `¡Excelente! Base cargada correctamente con ${rawExcelData.length} registros desde la pestaña "${sheetName}".`;
 
-                        fileInfo.textContent = `¡Excel cargado con éxito! Encontrados ${parsedData.length} registros en "${sheetName}".`;
-
-                        // Autoselección inteligente de columnas
+                        const selectIds = ['col-semana', 'col-tienda', 'col-categoria', 'col-surtido', 'col-entrega', 'col-clasificacion', 'col-fillrate', 'col-departamento', 'col-pais', 'col-subcategoria'];
+                        
                         selectIds.forEach(id => {
                             const el = document.getElementById(id);
                             el.innerHTML = '';
                             headers.forEach(h => {
                                 const opt = document.createElement('option');
                                 opt.value = h; opt.textContent = h;
-                                const keyword = id.replace('col-', '').toLowerCase();
-                                if (h.toLowerCase().includes(keyword)) opt.selected = true;
+                                const matchKeyword = id.replace('col-', '').toLowerCase();
+                                if (h.toLowerCase().includes(matchKeyword)) opt.selected = true;
                                 el.appendChild(opt);
                             });
                         });
 
-                        // Rellenar las categorías dinámicas del checklist
-                        const colCat = document.getElementById('col-categoria').value || headers[2];
-                        const catsUnicas = [...new Set(parsedData.map(row => row[colCat]).filter(Boolean))];
-
+                        // Categorías Únicas Checklist
+                        const colCat = document.getElementById('col-categoria').value;
+                        const cats = [...new Set(rawExcelData.map(r => r[colCat]).filter(Boolean))];
                         checklistContainer.innerHTML = '';
-                        catsUnicas.slice(0, 8).forEach(cat => {
+                        cats.slice(0, 8).forEach(cat => {
                             const lbl = document.createElement('label'); lbl.className = 'check-item';
-                            const chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = cat.toString().toUpperCase().includes('ROPA');
+                            const chk = document.createElement('input'); chk.type = 'checkbox';
+                            chk.checked = cat.toString().toUpperCase().includes('ROPA');
                             lbl.appendChild(chk); lbl.appendChild(document.createTextNode(cat));
                             checklistContainer.appendChild(lbl);
                         });
 
-                    } catch (err) { fileInfo.textContent = `Error: ${err.message}`; }
+                    } catch (err) {
+                        fileInfo.textContent = `Error: ${err.message}`;
+                    }
                 };
                 reader.readAsArrayBuffer(file);
             }
 
-            // PROCESAR Y GENERAR EL DASHBOARD REAL
+            // PROCESAR Y CAMBIAR A PANTALLA DASHBOARD
             btnGenerate.addEventListener('click', () => {
+                if(!rawExcelData.length) {
+                    alert("Por favor carga un archivo Excel antes de continuar.");
+                    return;
+                }
+
+                // Generar objeto de mapeo
+                mapping = {
+                    semana: document.getElementById('col-semana').value,
+                    tienda: document.getElementById('col-tienda').value,
+                    categoria: document.getElementById('col-categoria').value,
+                    surtido: document.getElementById('col-surtido').value,
+                    entrega: document.getElementById('col-entrega').value,
+                    clasificacion: document.getElementById('col-clasificacion').value,
+                    fillrate: document.getElementById('col-fillrate').value,
+                    departamento: document.getElementById('col-departamento').value,
+                    pais: document.getElementById('col-pais').value,
+                    subcategoria: document.getElementById('col-subcategoria').value
+                };
+
+                // Cambiar títulos dinámicos con etiquetas del usuario
                 const labelRopa = document.getElementById('text-color-ropa').value;
-                const labelOtros = document.getElementById('text-color-otros').value;
-                
                 document.getElementById('label-dinamico-bucket').textContent = `Entregado (Unid.) por Subcategoría (${labelRopa})`;
 
-                // Transición Visual
+                // Configurar opciones de filtros superiores basadas en los datos reales del excel
+                cargarOpcionesFiltros();
+
+                // Inicializar visualización del Dashboard
                 pantallaConfig.classList.add('hidden');
                 pantallaDashboard.classList.remove('hidden');
 
-                // Renderizar Gráficos Reales de la foto utilizando ChartJS
-                renderizarGraficosReales(labelRopa, labelOtros);
-                rellenarTablasDinamicas();
+                filtrarYActualizar();
             });
 
+            // Volver a Configuración
             btnReconfig.addEventListener('click', () => {
                 pantallaDashboard.classList.add('hidden');
                 pantallaConfig.classList.remove('hidden');
             });
 
-            function renderizarGraficosReales(labelRopa, labelOtros) {
-                // 1. Gráfico de Línea: Fill Rate por Semana
+            btnResumen.addEventListener('click', () => {
+                resetTodosLosFiltros();
+            });
+
+            // Acciones de Filtro en Sidebar (Ropa, Calzado, Cartera...)
+            document.querySelectorAll('.filter-dept').forEach(elem => {
+                elem.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-dept').forEach(x => x.classList.remove('active'));
+                    elem.classList.add('active');
+                    const deptValue = elem.getAttribute('data-dept');
+                    
+                    // Sincronizar el dropdown de departamento
+                    const selectDept = document.getElementById('filter-dept-select');
+                    const optionToSelect = [...selectDept.options].find(o => o.value.toLowerCase() === deptValue.toLowerCase());
+                    if(optionToSelect) {
+                        selectDept.value = optionToSelect.value;
+                    } else {
+                        selectDept.value = "Todas";
+                    }
+                    filtrarYActualizar();
+                });
+            });
+
+            // Escuchar cambios de filtros superiores
+            const filtrosIds = ['filter-semana', 'filter-pais', 'filter-dept-select', 'filter-categoria', 'filter-subcategoria', 'filter-tienda', 'filter-clasificacion'];
+            filtrosIds.forEach(id => {
+                document.getElementById(id).addEventListener('change', () => {
+                    if (id === 'filter-dept-select') {
+                        // Sincronizar el menú lateral si se cambia desde el select
+                        const deptVal = document.getElementById(id).value.toLowerCase();
+                        document.querySelectorAll('.filter-dept').forEach(x => {
+                            if(x.getAttribute('data-dept').toLowerCase() === deptVal) {
+                                x.classList.add('active');
+                            } else {
+                                x.classList.remove('active');
+                            }
+                        });
+                    }
+                    filtrarYActualizar();
+                });
+            });
+
+            btnReset.addEventListener('click', resetTodosLosFiltros);
+
+            function resetTodosLosFiltros() {
+                filtrosIds.forEach(id => document.getElementById(id).value = "Todas");
+                document.querySelectorAll('.filter-dept').forEach(x => x.classList.remove('active'));
+                filtrarYActualizar();
+            }
+
+            function cargarOpcionesFiltros() {
+                const llenarSelect = (id, campoExcel) => {
+                    const select = document.getElementById(id);
+                    select.innerHTML = '<option value="Todas">Todas</option>';
+                    const unicos = [...new Set(rawExcelData.map(r => r[campoExcel]).filter(Boolean))].sort();
+                    unicos.forEach(val => {
+                        const opt = document.createElement('option');
+                        opt.value = val; opt.textContent = val;
+                        select.appendChild(opt);
+                    });
+                };
+
+                llenarSelect('filter-semana', mapping.semana);
+                llenarSelect('filter-pais', mapping.pais);
+                llenarSelect('filter-dept-select', mapping.departamento);
+                llenarSelect('filter-categoria', mapping.categoria);
+                llenarSelect('filter-subcategoria', mapping.subcategoria);
+                llenarSelect('filter-tienda', mapping.tienda);
+                llenarSelect('filter-clasificacion', mapping.clasificacion);
+            }
+
+            // CORE: Filtrar los datos y redibujar todos los paneles
+            function filtrarYActualizar() {
+                const filterSem = document.getElementById('filter-semana').value;
+                const filterPa = document.getElementById('filter-pais').value;
+                const filterDep = document.getElementById('filter-dept-select').value;
+                const filterCat = document.getElementById('filter-categoria').value;
+                const filterSub = document.getElementById('filter-subcategoria').value;
+                const filterTie = document.getElementById('filter-tienda').value;
+                const filterClas = document.getElementById('filter-clasificacion').value;
+
+                // Filtrar matriz de datos real
+                currentFilteredData = rawExcelData.filter(row => {
+                    if (filterSem !== "Todas" && String(row[mapping.semana]) !== filterSem) return false;
+                    if (filterPa !== "Todas" && String(row[mapping.pais]) !== filterPa) return false;
+                    if (filterDep !== "Todas" && String(row[mapping.departamento]).toLowerCase() !== filterDep.toLowerCase()) return false;
+                    if (filterCat !== "Todas" && String(row[mapping.categoria]) !== filterCat) return false;
+                    if (filterSub !== "Todas" && String(row[mapping.subcategoria]) !== filterSub) return false;
+                    if (filterTie !== "Todas" && String(row[mapping.tienda]) !== filterTie) return false;
+                    if (filterClas !== "Todas" && String(row[mapping.clasificacion]) !== filterClas) return false;
+                    return true;
+                });
+
+                // 1. Recalcular KPIs
+                actualizarKPIs(filterPa);
+
+                // 2. Dibujar Gráficos Dinámicos
+                actualizarGraficos();
+
+                // 3. Rellenar Tablas
+                actualizarTablas();
+            }
+
+            function actualizarKPIs(paisSeleccionado) {
+                const totalSurtido = currentFilteredData.length;
+                let totalEntregado = 0;
+                let sumFillRate = 0;
+                let sumCumplimiento = 0;
+                const tiendasUnicas = new Set();
+
+                currentFilteredData.forEach(row => {
+                    totalEntregado += Number(row[mapping.entrega]) || 0;
+                    sumFillRate += parseFloat(row[mapping.fillrate]) || 0;
+                    sumCumplimiento += row[mapping.clasificacion] === "Completa" ? 1 : 0;
+                    if(row[mapping.tienda]) tiendasUnicas.add(row[mapping.tienda]);
+                });
+
+                const frGlobal = totalSurtido ? (sumFillRate / totalSurtido) : 0;
+                const cumpliGlobal = totalSurtido ? (sumCumplimiento / totalSurtido) * 100 : 0;
+
+                document.getElementById('kpi-surtidos').textContent = totalSurtido.toLocaleString();
+                document.getElementById('kpi-entregado').textContent = totalEntregado.toLocaleString();
+                document.getElementById('kpi-fillrate').textContent = `${frGlobal.toFixed(2)}%`;
+                document.getElementById('kpi-cumplimiento').textContent = `${cumpliGlobal.toFixed(2)}%`;
+                document.getElementById('kpi-tiendas').textContent = tiendasUnicas.size;
+                document.getElementById('kpi-pais-activo').textContent = paisSeleccionado;
+            }
+
+            function actualizarGraficos() {
+                const labelRopa = document.getElementById('text-color-ropa').value;
+
+                // A. Agrupación por semana
+                const semanasMap = {};
+                currentFilteredData.forEach(r => {
+                    const sem = r[mapping.semana];
+                    if(!semanasMap[sem]) semanasMap[sem] = { totalFr: 0, count: 0, cumplido: 0 };
+                    semanasMap[sem].totalFr += parseFloat(r[mapping.fillrate]) || 0;
+                    semanasMap[sem].count += 1;
+                    if(r[mapping.clasificacion] === "Completa") semanasMap[sem].cumplido += 1;
+                });
+                const ordenSemanas = Object.keys(semanasMap).sort();
+                const frSemanasValues = ordenSemanas.map(s => (semanasMap[s].totalFr / semanasMap[s].count).toFixed(2));
+                const cumpliSemanasValues = ordenSemanas.map(s => ((semanasMap[s].cumplido / semanasMap[s].count) * 100).toFixed(2));
+
+                // Redibujar Gráfico 1: Fill Rate por Semana
                 if(chartSemana) chartSemana.destroy();
                 chartSemana = new Chart(document.getElementById('chart-fillrate-semana'), {
                     type: 'line',
                     data: {
-                        labels: ['W21', 'W22', 'W23', 'W24', 'W25', 'W26', 'W27'],
+                        labels: ordenSemanas.length ? ordenSemanas : ['Sin datos'],
                         datasets: [{
-                            label: 'Fill Rate %',
-                            data: [94.21, 95.32, 97.15, 97.69, 98.10, 98.10, 98.62],
+                            data: frSemanasValues.length ? frSemanasValues : [0],
                             borderColor: '#2563eb',
                             backgroundColor: 'rgba(37, 99, 235, 0.1)',
                             fill: true,
-                            tension: 0.3,
-                            pointBackgroundColor: '#ffffff'
+                            tension: 0.3
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                 });
 
-                // 2. Gráfico de Donut: Subcategorías (Clasificado)
+                // B. Donut y Barras de Subcategorías
+                const subcatMap = {};
+                currentFilteredData.forEach(r => {
+                    const sub = r[mapping.subcategoria];
+                    if(sub) {
+                        subcatMap[sub] = (subcatMap[sub] || 0) + (Number(r[mapping.entrega]) || 0);
+                    }
+                });
+                const subcatLabels = Object.keys(subcatMap).slice(0, 5);
+                const subcatValues = subcatLabels.map(s => subcatMap[s]);
+
                 if(chartDonut) chartDonut.destroy();
                 chartDonut = new Chart(document.getElementById('chart-donut-subcat'), {
                     type: 'doughnut',
                     data: {
-                        labels: [labelRopa, 'Overhead', 'Completo', 'Interior', 'Deportiva'],
+                        labels: subcatLabels.length ? subcatLabels : ['Sin datos'],
                         datasets: [{
-                            data: [9842, 5421, 3890, 2105, 1850],
+                            data: subcatValues.length ? subcatValues : [0],
                             backgroundColor: ['#e0529c', '#2563eb', '#10b981', '#f59e0b', '#7c3aed']
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#7e95c3' } } } }
                 });
 
-                // 3. Gráfico de Barras Horizontales: Entregado por subcat
                 if(chartBarsSub) chartBarsSub.destroy();
                 chartBarsSub = new Chart(document.getElementById('chart-bars-subcat'), {
                     type: 'bar',
                     data: {
-                        labels: ['Ropa Color', 'Ropa Overhead', 'Ropa Completo', 'Ropa Interior', 'Ropa Deportiva'],
+                        labels: subcatLabels.map(label => label.toLowerCase().includes('ropa') ? `${label} (${labelRopa})` : label),
                         datasets: [{
-                            axis: 'y',
-                            label: 'Unidades',
-                            data: [9842, 5421, 3890, 2105, 1850],
+                            data: subcatValues,
                             backgroundColor: '#2563eb'
                         }]
                     },
                     options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                 });
 
-                // 4. Clasificación Unidades (Barras Horizontales Especiales)
+                // C. Clasificación
+                const clasifMap = { Overfilled: 0, Completa: 0, Básico: 0, Undersized: 0 };
+                currentFilteredData.forEach(r => {
+                    const cl = r[mapping.clasificacion];
+                    if(cl && cl in clasifMap) clasifMap[cl]++;
+                });
+
                 if(chartClasif) chartClasif.destroy();
                 chartClasif = new Chart(document.getElementById('chart-barras-clasificacion'), {
                     type: 'bar',
                     data: {
-                        labels: ['Overfilled', 'Completa', 'Básico', 'Undersized'],
+                        labels: Object.keys(clasifMap),
                         datasets: [{
-                            axis: 'y',
-                            data: [6842, 12105, 2305, 1905],
+                            data: Object.values(clasifMap),
                             backgroundColor: ['#2bbba1', '#2563eb', '#f59e0b', '#ef4444']
                         }]
                     },
                     options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                 });
 
-                // 5. Cumplimiento por Semana (Barras Verticales)
+                // D. Cumplimiento por Semana
                 if(chartCumplimiento) chartCumplimiento.destroy();
                 chartCumplimiento = new Chart(document.getElementById('chart-bars-cumplimiento'), {
                     type: 'bar',
                     data: {
-                        labels: ['W21', 'W22', 'W23', 'W24', 'W25', 'W26', 'W27'],
+                        labels: ordenSemanas.length ? ordenSemanas : ['Sin Datos'],
                         datasets: [{
-                            data: [92.2, 93.5, 94.8, 95.6, 96.3, 97.1, 97.18],
+                            data: cumpliSemanasValues.length ? cumpliSemanasValues : [0],
                             backgroundColor: '#10b981'
                         }]
                     },
@@ -805,43 +979,58 @@
                 });
             }
 
-            function rellenarTablasDinamicas() {
-                // Top 10 Tiendas (Simulando los datos de la foto)
+            function actualizarTablas() {
+                // Top 10 Tiendas
+                const tiendasMap = {};
+                currentFilteredData.forEach(r => {
+                    const tie = r[mapping.tienda];
+                    if(!tiendasMap[tie]) tiendasMap[tie] = { entregado: 0, sumFr: 0, compliCount: 0, total: 0 };
+                    tiendasMap[tie].entregado += Number(r[mapping.entrega]) || 0;
+                    tiendasMap[tie].sumFr += parseFloat(r[mapping.fillrate]) || 0;
+                    tiendasMap[tie].total += 1;
+                    if(r[mapping.clasificacion] === "Completa") tiendasMap[tie].compliCount++;
+                });
+
+                const sortedTiendas = Object.keys(tiendasMap).map(name => {
+                    const info = tiendasMap[name];
+                    return {
+                        name,
+                        entregado: info.entregado,
+                        fillrate: (info.sumFr / info.total),
+                        cumplimiento: ((info.compliCount / info.total) * 100)
+                    };
+                }).sort((a, b) => b.fillrate - a.fillrate).slice(0, 10);
+
                 const topBody = document.querySelector('#top-tiendas-table tbody');
                 topBody.innerHTML = '';
-                const datosTop = [
-                    { t: 'PC21 - Multiplaza', e: '2,593', fr: '100.00%', c: '99.21%' },
-                    { t: 'PC09 - Metrocentro', e: '2,050', fr: '99.15%', c: '98.02%' },
-                    { t: 'PC29 - Plaza Mundo', e: '1,980', fr: '98.62%', c: '97.18%' },
-                    { t: 'PC32 - La Gran Vía', e: '1,842', fr: '97.81%', c: '96.10%' },
-                    { t: 'PC16 - Soyapango', e: '1,760', fr: '97.25%', c: '95.45%' }
-                ];
-                datosTop.forEach(item => {
+                if(!sortedTiendas.length) {
+                    topBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin registros en esta vista</td></tr>';
+                }
+                sortedTiendas.forEach(item => {
                     const r = document.createElement('tr');
-                    r.innerHTML = `<td>${item.t}</td><td>${item.e}</td><td style="color:var(--teal-tag); font-weight:700;">${item.fr}</td><td>${item.c}</td>`;
+                    r.innerHTML = `<td>${item.name}</td><td>${item.entregado.toLocaleString()}</td><td style="color:var(--teal-tag); font-weight:700;">${item.fillrate.toFixed(2)}%</td><td>${item.cumplimiento.toFixed(2)}%</td>`;
                     topBody.appendChild(r);
                 });
 
-                // Detalle de Surtidos
+                // Detalle Surtidos (Tabla inferior)
                 const detBody = document.querySelector('#tabla-surtidos-detalle tbody');
                 detBody.innerHTML = '';
-                const datosDet = [
-                    { s: 'W27', t: 'PC21 - Multiplaza', d: 'Ropa', c: 'Ropa Color', sub: 'Camisas', cod: 'RC-CAM-001', e: '1,250', fr: '100.00%', cl: 'Completa' },
-                    { s: 'W27', t: 'PC21 - Multiplaza', d: 'Ropa', c: 'Ropa Color', sub: 'Pantalones', cod: 'RC-PAN-002', e: '890', fr: '98.90%', cl: 'Completa' },
-                    { s: 'W27', t: 'PC09 - Metrocentro', d: 'Ropa', c: 'Ropa Overhead', sub: 'Chalecos', cod: 'RO-CHA-001', e: '680', fr: '99.23%', cl: 'Completa' }
-                ];
-                datosDet.forEach(item => {
+                const limitRows = currentFilteredData.slice(0, 25);
+                if(!limitRows.length) {
+                    detBody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Ningún registro para mostrar</td></tr>';
+                }
+                limitRows.forEach(item => {
                     const r = document.createElement('tr');
                     r.innerHTML = `
-                        <td>${item.s}</td>
-                        <td>${item.t}</td>
-                        <td>${item.d}</td>
-                        <td>${item.c}</td>
-                        <td>${item.sub}</td>
-                        <td>${item.cod}</td>
-                        <td>${item.e}</td>
-                        <td style="color:var(--teal-tag);">${item.fr}</td>
-                        <td><span class="badge-pill badge-complete">${item.cl}</span></td>
+                        <td>${item[mapping.semana] || ''}</td>
+                        <td>${item[mapping.tienda] || ''}</td>
+                        <td>${item[mapping.departamento] || ''}</td>
+                        <td>${item[mapping.categoria] || ''}</td>
+                        <td>${item[mapping.subcategoria] || ''}</td>
+                        <td>${item[mapping.surtido] || ''}</td>
+                        <td>${(Number(item[mapping.entrega]) || 0).toLocaleString()}</td>
+                        <td style="color:var(--teal-tag); font-weight:700;">${(parseFloat(item[mapping.fillrate]) || 0).toFixed(2)}%</td>
+                        <td><span class="badge-pill badge-complete">${item[mapping.clasificacion] || ''}</span></td>
                     `;
                     detBody.appendChild(r);
                 });

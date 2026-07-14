@@ -4,9 +4,298 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fill Rate V1</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Incluimos la librería SheetJS para procesar Excel masivos en el navegador -->
+    <!-- Librería SheetJS para procesar Excel en el navegador -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-main: #0b111e;
+            --bg-card: #131c2e;
+            --bg-input: #1b263b;
+            --border-color: #26354e;
+            --text-primary: #ffffff;
+            --text-secondary: #8fa0dd;
+            --accent-blue: #2563eb;
+            --accent-hover: #3b82f6;
+            --pink-tag: #e0529c;
+            --teal-tag: #2bbba1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .header-title span {
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 18px;
+            margin-left: 4px;
+        }
+
+        .user-badge {
+            background: var(--bg-card);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-left: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .flag-icon {
+            font-size: 24px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .drop-zone {
+            background: var(--bg-card);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .drop-zone:hover {
+            background: #162238;
+            border-color: var(--accent-blue);
+        }
+
+        .drop-zone-content h3 {
+            font-size: 18px;
+            margin: 10px 0 5px 0;
+        }
+
+        .drop-zone-content p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .hint {
+            display: block;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .file-info {
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+            border-left: 4px solid var(--teal-tag);
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .config-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .mapping-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        select, input[type="text"], input[type="date"] {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            padding: 10px 12px;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+        }
+
+        .help-text {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .categories-checklist {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .empty-notice {
+            color: #64748b;
+            font-size: 13px;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .check-item input[type="checkbox"] {
+            accent-color: var(--pink-tag);
+            width: 16px;
+            height: 16px;
+        }
+
+        .bucket-group {
+            background: var(--bg-input);
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 10px;
+            border-left: 4px solid transparent;
+        }
+
+        .row-bucket { border-left-color: var(--pink-tag); }
+        .others-bucket { border-left-color: var(--teal-tag); }
+
+        .bucket-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .bucket-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            height: 38px;
+        }
+
+        .color-picker-wrapper input[type="color"] {
+            border: none;
+            background: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .params-inline-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .action-wrapper {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
     <header class="main-header">
@@ -20,12 +309,12 @@
     </header>
 
     <main class="dashboard-container">
-        <!-- Zona de Carga de Archivo -->
+        <!-- Zona de Carga -->
         <section class="upload-section">
             <div id="drop-zone" class="drop-zone">
                 <div class="drop-zone-content">
-                    <svg class="upload-icon" viewBox="0 0 24 24" width="48" height="48">
-                        <path fill="currentColor" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                    <svg viewBox="0 0 24 24" width="48" height="48" style="color:var(--text-secondary); fill:currentColor; margin-bottom:10px;">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
                     </svg>
                     <h3>Arrastra tu archivo Excel aquí</h3>
                     <p>O haz clic para buscarlo en tu equipo</p>
@@ -36,114 +325,65 @@
             <div id="file-info" class="file-info hidden"></div>
         </section>
 
-        <!-- Formulario de Mapeo y Clasificación -->
+        <!-- Formulario -->
         <div class="config-grid">
-            <!-- Columna Izquierda: Mapeo -->
             <section class="config-card">
                 <h2>Mapeo de Columnas (Configuración)</h2>
                 <p class="section-desc">Asocia las columnas requeridas por el sistema con los campos reales de tu archivo Excel.</p>
                 
                 <form id="mapping-form" class="mapping-form">
+                    <div class="form-group"><label>Semana</label><select id="col-semana" required><option>Esperando archivo...</option></select></div>
+                    <div class="form-group"><label>Tienda</label><select id="col-tienda" required><option>Esperando archivo...</option></select></div>
+                    <div class="form-group"><label>Categoría</label><select id="col-categoria" required><option>Esperando archivo...</option></select></div>
+                    <div class="form-group"><label>Surtido</label><select id="col-surtido" required><option>Esperando archivo...</option></select></div>
+                    <div class="form-group"><label>Entrega</label><select id="col-entrega" required><option>Esperando archivo...</option></select></div>
+                    <div class="form-group"><label>Clasificación</label><select id="col-clasificacion" required><option>Esperando archivo...</option></select></div>
+                    <div class="form-group"><label>Fill Rate</label><select id="col-fillrate" required><option>Esperando archivo...</option></select></div>
+                    <div class="form-group"><label>Departamento</label><select id="col-departamento" required><option>Esperando archivo...</option></select></div>
+                    <div class="form-group"><label>País</label><select id="col-pais" required><option>Esperando archivo...</option></select></div>
+                    <div class="form-group"><label>Subcategoría</label><select id="col-subcategoria" required><option>Esperando archivo...</option></select></div>
                     <div class="form-group">
-                        <label for="col-semana">Semana</label>
-                        <select id="col-semana" name="semana" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-tienda">Tienda</label>
-                        <select id="col-tienda" name="tienda" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-categoria">Categoría</label>
-                        <select id="col-categoria" name="categoria" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-surtido">Surtido</label>
-                        <select id="col-surtido" name="surtido" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-entrega">Entrega</label>
-                        <select id="col-entrega" name="entrega" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-clasificacion">Clasificación</label>
-                        <select id="col-clasificacion" name="clasificacion" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-fillrate">Fill Rate</label>
-                        <select id="col-fillrate" name="fillrate" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-departamento">Departamento</label>
-                        <select id="col-departamento" name="departamento" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-pais">País</label>
-                        <select id="col-pais" name="pais" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-subcategoria">Subcategoría</label>
-                        <select id="col-subcategoria" name="subcategoria" required><option value="">Esperando archivo...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="col-agrupar">Agrupar Marca por...</label>
-                        <select id="col-agrupar" name="agrupar" required>
+                        <label>Agrupar Marca por...</label>
+                        <select id="col-agrupar" required>
                             <option value="Marca">Marca</option>
                             <option value="Proveedor">Proveedor</option>
                         </select>
-                        <small class="help-text">Define la columna para los análisis agrupados en los gráficos.</small>
                     </div>
                 </form>
             </section>
 
-            <!-- Columna Derecha: Categorías y Fechas -->
             <div class="right-panel">
                 <section class="config-card">
                     <h2>Clasificación de Categorías</h2>
-                    <p class="section-desc">Asigna las categorías detectadas a sus respectivos buckets de visualización.</p>
+                    <p class="section-desc">Asigna las categorías detectadas a sus respectivos buckets.</p>
                     
                     <div class="categories-container">
-                        <div class="categories-list-wrapper">
-                            <label class="list-label">Checklist desde columna Categoría</label>
+                        <div>
+                            <label class="list-label" style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:5px;">Checklist desde columna Categoría</label>
                             <div id="categories-checklist" class="categories-checklist">
-                                <p class="empty-notice">Carga un archivo para listar las categorías disponibles.</p>
+                                <p class="empty-notice">Carga un archivo para listar las categorías.</p>
                             </div>
                         </div>
 
                         <div class="buckets-config">
                             <div class="bucket-group row-bucket">
-                                <div class="bucket-header">
-                                    <span class="bucket-title">Bucket: Ropa</span>
-                                </div>
+                                <span class="bucket-title">Bucket: Ropa</span>
                                 <div class="bucket-inputs">
-                                    <div class="input-subgroup">
-                                        <label>Label</label>
-                                        <input type="text" id="label-ropa" value="Ropa">
-                                    </div>
-                                    <div class="input-subgroup">
-                                        <label>Color / Tag</label>
-                                        <div class="color-picker-wrapper">
-                                            <input type="color" id="color-ropa" value="#e0529c">
-                                            <span class="color-label">ROSADO NOTA</span>
-                                        </div>
+                                    <div><input type="text" value="Ropa"></div>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" value="#e0529c">
+                                        <span style="font-size:11px; font-weight:600; color:var(--pink-tag)">ROSADO NOTA</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="bucket-group others-bucket">
-                                <div class="bucket-header">
-                                    <span class="bucket-title">Bucket: Otros</span>
-                                </div>
+                                <span class="bucket-title">Bucket: Otros</span>
                                 <div class="bucket-inputs">
-                                    <div class="input-subgroup">
-                                        <label>Bucket</label>
-                                        <input type="text" id="label-otros" value="Otros">
-                                    </div>
-                                    <div class="input-subgroup">
-                                        <label>Color / Tag</label>
-                                        <div class="color-picker-wrapper">
-                                            <input type="color" id="color-otros" value="#2bbba1">
-                                            <span class="color-label">GRIS - OTROS</span>
-                                        </div>
+                                    <div><input type="text" value="Otros"></div>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" value="#2bbba1">
+                                        <span style="font-size:11px; font-weight:600; color:var(--teal-tag)">GRIS - OTROS</span>
                                     </div>
                                 </div>
                             </div>
@@ -151,32 +391,80 @@
                     </div>
                 </section>
 
-                <!-- Parámetros adicionales y Acción -->
-                <section class="config-card extra-params-card">
+                <section class="config-card">
                     <div class="params-inline-grid">
-                        <div class="form-group">
-                            <label for="semana-entrega">Semana de Entrega</label>
-                            <input type="text" id="semana-entrega" placeholder="Ej: Semana Venta">
-                        </div>
-                        <div class="form-group">
-                            <label for="fecha-surtir">Fecha a Surtir</label>
-                            <input type="date" id="fecha-surtir">
-                        </div>
+                        <div class="form-group"><label>Semana de Entrega</label><input type="text" id="semana-entrega" placeholder="Ej: Semana Venta"></div>
+                        <div class="form-group"><label>Fecha a Surtir</label><input type="date" id="fecha-surtir"></div>
                     </div>
-                    
                     <div class="action-wrapper">
-                        <button type="button" id="btn-generate" class="btn-primary">
-                            <span>Procesar y Generar Dashboard</span>
-                            <svg class="sparkle-icon" viewBox="0 0 24 24" width="18" height="18">
-                                <path fill="currentColor" d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z"/>
-                            </svg>
-                        </button>
+                        <button type="button" id="btn-generate" class="btn-primary">Procesar y Generar Dashboard</button>
                     </div>
                 </section>
             </div>
         </div>
     </main>
 
-    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            const fileInfo = document.getElementById('file-info');
+            const checklistContainer = document.getElementById('categories-checklist');
+            
+            const selects = ['col-semana', 'col-tienda', 'col-categoria', 'col-surtido', 'col-entrega', 'col-clasificacion', 'col-fillrate', 'col-departamento', 'col-pais', 'col-subcategoria'];
+
+            dropZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
+
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.background = '#162238'; });
+            dropZone.addEventListener('dragleave', () => { dropZone.style.background = '#131c2e'; });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.background = '#131c2e';
+                if (e.dataTransfer.files.length > 0) { fileInput.files = e.dataTransfer.files; handleFile(e.dataTransfer.files[0]); }
+            });
+
+            function handleFile(file) {
+                fileInfo.classList.remove('hidden');
+                fileInfo.textContent = `Leyendo: ${file.name}...`;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array', sheetRows: 50 });
+                        let sheetName = workbook.SheetNames.find(name => name.toUpperCase() === 'BASE_MAESTRA') || workbook.SheetNames[0];
+                        const headers = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 })[0];
+
+                        if (!headers) throw new Error("No se detectaron columnas.");
+
+                        fileInfo.textContent = `¡Éxito! Leída pestaña: "${sheetName}".`;
+                        
+                        selects.forEach(id => {
+                            const el = document.getElementById(id);
+                            el.innerHTML = '';
+                            headers.forEach(h => {
+                                const opt = document.createElement('option');
+                                opt.value = h; opt.textContent = h;
+                                if (h.toLowerCase().includes(id.replace('col-', ''))) opt.selected = true;
+                                el.appendChild(opt);
+                            });
+                        });
+
+                        checklistContainer.innerHTML = '';
+                        ['ROPA INTERIOR', 'ROPA DEPORTIVA', 'ACCESORIOS', 'CALZADO'].forEach(cat => {
+                            const lbl = document.createElement('label'); lbl.className = 'check-item';
+                            const chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = cat.includes('ROPA');
+                            lbl.appendChild(chk); lbl.appendChild(document.createTextNode(cat));
+                            checklistContainer.appendChild(lbl);
+                        });
+                    } catch (err) { fileInfo.textContent = `Error: ${err.message}`; }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            document.getElementById('btn-generate').addEventListener('click', () => { alert('¡Configuración lista para procesar el dashboard!'); });
+        });
+    </script>
 </body>
 </html>

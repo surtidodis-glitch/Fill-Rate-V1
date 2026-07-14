@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fill Rate V1 - El Salvador</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- APP CONTAINER -->
+    <div class="app-container">
+        
+        <!-- HEADER -->
+        <header class="main-header">
+            <div class="header-logo">
+                <span class="logo-accent">FILL RATE</span> <span class="logo-version">V1</span>
+                <span class="logo-country">🇸🇻 El Salvador</span>
+            </div>
+            <div class="header-actions" id="headerActions" style="display: none;">
+                <button id="btnExportPNG" class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Exportar PNG
+                </button>
+                <button id="btnExportPDF" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Exportar PDF
+                </button>
+                <button id="btnReset" class="btn btn-danger">Nueva Carga</button>
+            </div>
+        </header>
+
+        <!-- SCREEN 1: UPLOAD -->
+        <section id="screenUpload" class="screen active">
+            <div class="upload-card">
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📊</div>
+                    <h3>Arrastra tu archivo Excel aquí</h3>
+                    <p>O haz clic para buscarlo en tu equipo</p>
+                    <span class="drop-zone-note">Se buscará automáticamente la pestaña <strong>BASE_MAESTRA</strong></span>
+                    <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;">
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: MAPPING & CONFIG -->
+        <section id="screenMapping" class="screen">
+            <div class="config-grid">
+                <!-- Column Mapping Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Mapeo de Columnas Detectadas</h2>
+                    </div>
+                    <div class="card-body">
+                        <p class="section-desc">Asocia las columnas requeridas por el sistema con los campos reales de tu archivo Excel.</p>
+                        <form id="mappingForm" class="mapping-form">
+                            <!-- Mapping fields will be generated dynamically -->
+                            <div id="dynamicMappingFields"></div>
+                            
+                            <div class="form-group alert-group">
+                                <label for="selGroupBrand">Agrupar Marca por...</label>
+                                <select id="selGroupBrand" class="form-control" required></select>
+                                <small class="form-help">Selecciona la columna que define la Marca / Proveedor para los análisis agrupados.</small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Manual Configurations Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Configuraciones Requeridas del Reporte</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="txtDeliveryWeek">Semana de Entrega</label>
+                            <input type="text" id="txtDeliveryWeek" class="form-control" placeholder="Ej: Semana 15 / W15" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateSurtir">Fecha a Surtir</label>
+                            <input type="date" id="dateSurtir" class="form-control" required>
+                        </div>
+
+                        <div class="category-classification-section">
+                            <h3>Clasificación de Categorías</h3>
+                            <p class="section-desc">Asigna las categorías detectadas a sus respectivos buckets de visualización.</p>
+                            
+                            <div class="bucket-settings">
+                                <div class="bucket-box clothing">
+                                    <h4>Bucket: Ropa</h4>
+                                    <div class="form-group">
+                                        <label>Etiqueta / Nombre</label>
+                                        <input type="text" id="txtLabelRopa" class="form-control" value="ROPA NOTA">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Color en Gráfico</label>
+                                        <input type="color" id="colorRopa" class="form-control color-picker" value="#ec4899">
+                                    </div>
+                                </div>
+                                <div class="bucket-box others">
+                                    <h4>Bucket: Otros</h4>
+                                    <div class="form-group">
+                                        <label>Etiqueta / Nombre</label>
+                                        <input type="text" id="txtLabelOtros" class="form-control" value="GRIS - OTROS">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Color en Gráfico</label>
+                                        <input type="color" id="colorOtros" class="form-control color-picker" value="#3b82f6">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="category-checklist-container">
+                                <label class="checklist-title">Asignación Manual (Marcados = Ropa, Desmarcados = Otros):</label>
+                                <div id="categoryChecklist" class="category-checklist">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" id="btnProcessData" class="btn btn-primary btn-block btn-large">Procesar y Generar Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: DASHBOARD -->
+        <section id="screenDashboard" class="screen">
+            <!-- Filter & Meta Bar -->
+            <div class="dashboard-meta-bar">
+                <div class="meta-info">
+                    <span class="meta-item">📅 <strong id="metaWeek">-</strong></span>
+                    <span class="meta-item">🗓️ Fecha a Surtir: <strong id="metaDate">-</strong></span>
+                </div>
+                <div class="meta-filters">
+                    <label for="filterWeek">Filtrar por Semana (Excel):</label>
+                    <select id="filterWeek" class="form-control filter-select">
+                        <option value="ALL">Todas las semanas</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- KPI Row -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-title">Fill Rate Total</div>
+                    <div class="kpi-value highlight-teal" id="kpiFillRate">0.0%</div>
+                    <div class="kpi-desc">Total Entregado / Total Surtido</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Artículos / FPC Totales</div>
+                    <div class="kpi-value" id="kpiTotalFPC">0</div>
+                    <div class="kpi-desc">Líneas de pedido analizadas</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Cumplimiento FPC</div>
+                    <div class="kpi-value-split">
+                        <span class="val-success" id="kpiFpccumplidos">0</span>
+                        <span class="val-divider">/</span>
+                        <span class="val-danger" id="kpiFpcNoCumplidos">0</span>
+                    </div>
+                    <div class="kpi-desc">Cumplidos (≥100% o no Underfilled) vs No Cumplidos</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">SKUs Totales / Cumplidos</div>
+                    <div class="kpi-value-split">
+                        <span id="kpiSkusTotales">0</span>
+                        <span class="val-divider">/</span>
+                        <span class="highlight-blue" id="kpiSkusCumplidos">0</span>
+                    </div>
+                    <div class="kpi-desc">Surtido Total vs Mínimo(Entrega, Surtido)</div>
+                </div>
+            </div>
+
+            <!-- Charts Section 1 (Donuts) -->
+            <div class="dashboard-row summary-donuts-grid">
+                <div class="card grid-donut-item">
+                    <div class="card-header"><h3>FR Total</h3></div>
+                    <div class="chart-container-donut"><canvas id="chartDonutFR"></canvas></div>
+                </div>
+                <div class="card grid-donut-item">
+                    <div class="card-header"><h3>FPC %</h3></div>
+                    <div class="chart-container-donut"><canvas id="chartDonutFPC"></canvas></div>
+                </div>
+                <div class="card grid-donut-item">
+                    <div class="card-header"><h3>SKUs %</h3></div>
+                    <div class="chart-container-donut"><canvas id="chartDonutSKU"></canvas></div>
+                </div>
+                <div class="card grid-donut-item">
+                    <div class="card-header"><h3>Fill Rate Ropa vs Otros</h3></div>
+                    <div class="chart-container-donut"><canvas id="chartDonutBuckets"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Charts & Tables Layout -->
+            <div class="dashboard-main-grid">
+                <!-- Left Side: Charts -->
+                <div class="dashboard-column-charts">
+                    <div class="card">
+                        <div class="card-header"><h2>Comparativo por Bucket Categoría: FPC% vs SKUs%</h2></div>
+                        <div class="card-body">
+                            <div class="chart-container"><canvas id="chartCategoryBars"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2>Top 10 Marcas con Mayor Surtido</h2></div>
+                        <div class="card-body">
+                            <div class="chart-container"><canvas id="chartTopBrands"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Data Tables -->
+                <div class="dashboard-column-tables">
+                    <!-- Bucket Table -->
+                    <div class="card">
+                        <div class="card-header"><h2>Resumen por Grupo (Buckets)</h2></div>
+                        <div class="card-body no-padding">
+                            <div class="table-responsive">
+                                <table class="data-table" id="tableBuckets">
+                                    <thead>
+                                        <tr>
+                                            <th>Grupo</th>
+                                            <th>Surtido</th>
+                                            <th>Entrega</th>
+                                            <th>Fill Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Brand Table -->
+                    <div class="card">
+                        <div class="card-header"><h2>Fill Rate Desglosado por Marca</h2></div>
+                        <div class="card-body no-padding">
+                            <div class="table-responsive table-max-height">
+                                <table class="data-table" id="tableBrands">
+                                    <thead>
+                                        <tr>
+                                            <th>Marca / Proveedor</th>
+                                            <th>Surtido</th>
+                                            <th>Entrega</th>
+                                            <th>Fill Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loadingText">Cargando...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>

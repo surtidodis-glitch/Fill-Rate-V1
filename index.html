@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FILL RATE Dashboard</title>
-    <!-- Librerías de procesamiento de Excel y Gráficos profesionales -->
+    <title>Enterprise Fill Rate System</title>
+    <!-- Motores de procesamiento de datos y gráficos premium -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
-            --bg-main: #080d19;
+            --bg-main: #060a13;
             --bg-sidebar: #0b111e;
-            --bg-card: #111a2e;
-            --bg-input: #17233c;
-            --border-color: #1e2d4a;
+            --bg-card: #0f182c;
+            --bg-input: #16223f;
+            --border-color: #1e2e4f;
             --text-primary: #ffffff;
-            --text-secondary: #7e95c3;
-            --accent-blue: #2563eb;
-            --accent-hover: #3b82f6;
+            --text-secondary: #748ba7;
+            --accent-blue: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
             --pink-tag: #e0529c;
-            --teal-tag: #2bbba1;
+            --teal-tag: #14b8a6;
             --success-green: #10b981;
         }
 
@@ -28,7 +28,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
@@ -39,177 +39,141 @@
             overflow-x: hidden;
         }
 
-        /* --- PANTALLA 1: CONFIGURACIÓN --- */
+        /* --- PANTALLA 1: CARGA ULTRA LIMPIA --- */
         #pantalla-configuracion {
             width: 100%;
-            max-width: 1300px;
-            margin: 40px auto;
-            padding: 0 20px;
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 0 24px;
         }
 
         .config-header {
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .config-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
         }
 
         .drop-zone {
             background: var(--bg-card);
             border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            padding: 40px 20px;
+            border-radius: 12px;
+            padding: 50px 30px;
             text-align: center;
             cursor: pointer;
-            transition: background 0.2s ease;
-            margin-bottom: 25px;
+            transition: all 0.25s ease;
+            margin-bottom: 30px;
         }
 
         .drop-zone:hover {
-            background: #15223c;
             border-color: var(--accent-blue);
+            box-shadow: 0 0 20px var(--accent-glow);
+            background: #121c33;
         }
 
-        .config-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        .config-card {
+        .setup-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 24px;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .config-card h2 {
+        .setup-card h2 {
             font-size: 18px;
-            margin-bottom: 6px;
-        }
-
-        .section-desc {
-            color: var(--text-secondary);
-            font-size: 13px;
             margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin-bottom: 14px;
+            gap: 8px;
+            margin-bottom: 20px;
         }
 
-        select, input[type="text"], input[type="date"] {
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"] {
             background: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             color: var(--text-primary);
-            padding: 10px 12px;
-            font-size: 14px;
+            padding: 12px 16px;
+            font-size: 15px;
             width: 100%;
             outline: none;
+            transition: border 0.2s;
         }
 
-        .categories-checklist {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px;
-            max-height: 150px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 15px;
+        input[type="text"]:focus {
+            border-color: var(--accent-blue);
         }
 
-        .check-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .bucket-group {
-            background: var(--bg-input);
-            border-radius: 6px;
-            padding: 12px;
-            margin-top: 10px;
-            border-left: 4px solid transparent;
-        }
-
-        .row-bucket { border-left-color: var(--pink-tag); }
-        .others-bucket { border-left-color: var(--teal-tag); }
-
-        .color-picker-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--bg-card);
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            height: 38px;
-        }
-
-        .color-picker-wrapper input[type="color"] {
-            border: none;
-            background: none;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-        }
-
-        .color-input-editable {
-            background: transparent !important;
-            border: none !important;
-            color: var(--text-primary) !important;
-            padding: 0 !important;
-            font-size: 12px !important;
-            font-weight: 600;
+        .bucket-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 5px;
         }
 
         .btn-primary {
             background: var(--accent-blue);
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 12px 24px;
-            font-size: 14px;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
+            transition: background 0.2s;
+            margin-top: 10px;
         }
 
-        /* --- PANTALLA 2: DASHBOARD INTERACTIVO --- */
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        /* --- PANTALLA 2: DASHBOARD PROFESIONAL --- */
         #pantalla-dashboard-real {
             display: flex;
             width: 100%;
             min-height: 100vh;
         }
 
-        /* Menú Lateral */
         .sidebar {
-            width: 240px;
+            width: 250px;
             background: var(--bg-sidebar);
             border-right: 1px solid var(--border-color);
-            padding: 24px 16px;
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 24px;
             flex-shrink: 0;
         }
 
         .brand-logo {
             font-weight: 800;
-            font-size: 20px;
-            letter-spacing: 1px;
+            font-size: 22px;
+            letter-spacing: -0.5px;
             color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .menu-section {
@@ -223,369 +187,307 @@
             text-transform: uppercase;
             color: var(--text-secondary);
             margin: 12px 0 6px 8px;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
 
         .menu-item {
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 13px;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 14px;
             color: var(--text-secondary);
             text-decoration: none;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             transition: all 0.2s;
         }
 
         .menu-item.active, .menu-item:hover {
-            background: #141f35;
+            background: #16223f;
             color: var(--text-primary);
         }
 
-        /* Contenido Principal */
         .main-content {
             flex: 1;
-            padding: 24px;
+            padding: 30px;
             background: var(--bg-main);
             overflow-y: auto;
         }
 
-        /* Filtros Superiores */
         .top-filters-bar {
             display: grid;
             grid-template-columns: repeat(7, 1fr) auto;
             gap: 12px;
             background: var(--bg-sidebar);
             padding: 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             align-items: center;
         }
 
-        /* Tarjetas KPI */
+        .top-filters-bar select {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            padding: 8px;
+            font-size: 12px;
+            width: 100%;
+            outline: none;
+        }
+
+        /* KPIs Estilizados */
         .kpi-row {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            margin-bottom: 24px;
+            gap: 16px;
+            margin-bottom: 30px;
         }
 
         .kpi-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
+            border-radius: 10px;
+            padding: 20px;
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
         }
 
-        .kpi-icon-box {
-            width: 42px;
-            height: 42px;
-            border-radius: 8px;
-            background: var(--bg-input);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .kpi-data p {
-            font-size: 11px;
+        .kpi-card p {
+            font-size: 12px;
             color: var(--text-secondary);
+            font-weight: 500;
         }
 
-        .kpi-data h4 {
-            font-size: 18px;
+        .kpi-card h4 {
+            font-size: 22px;
             font-weight: 700;
+            margin-top: 10px;
         }
 
         .kpi-trend {
-            font-size: 10px;
+            font-size: 11px;
             color: var(--success-green);
-            margin-top: 2px;
+            margin-top: 6px;
+            font-weight: 600;
         }
 
-        /* Grid de Gráficos */
-        .charts-row-1 {
+        /* Bloques de Reporte */
+        .charts-row-1, .charts-row-2 {
             display: grid;
             grid-template-columns: 1.5fr 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .charts-row-2 {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 24px;
+            gap: 24px;
+            margin-bottom: 25px;
         }
 
         .panel-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
 
         .panel-card h3 {
             font-size: 14px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             color: var(--text-primary);
+            font-weight: 600;
+            letter-spacing: -0.2px;
         }
 
-        /* Tablas */
         .table-custom {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
-            margin-top: 10px;
+            font-size: 13px;
         }
 
         .table-custom th {
             text-align: left;
             color: var(--text-secondary);
-            padding: 8px;
+            padding: 10px;
             border-bottom: 1px solid var(--border-color);
             font-weight: 600;
         }
 
         .table-custom td {
-            padding: 8px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 10px;
+            border-bottom: 1px solid #14203a;
         }
 
         .badge-pill {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
             font-weight: 600;
-            text-transform: uppercase;
         }
 
-        .badge-complete { background: rgba(16, 185, 129, 0.2); color: var(--success-green); }
-
+        .badge-complete { background: rgba(16, 185, 129, 0.15); color: var(--success-green); }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- ================= PANTALLA 1: CONFIGURACIÓN ================= -->
+    <!-- ================= PANTALLA 1: PANEL DE CONFIGURACIÓN SIMPLIFICADO ================= -->
     <div id="pantalla-configuracion">
         <div class="config-header">
-            <h1 style="font-size: 26px;">Configuración de Origen de Datos</h1>
-            <p style="color: var(--text-secondary);">Carga tu reporte base de Fill Rate y define tus parámetros.</p>
+            <h1>Inicializar Dashboard de Operaciones</h1>
+            <p style="color: var(--text-secondary); font-size:15px;">Mapeo inteligente automático. Configura el branding de tu informe debajo.</p>
         </div>
 
         <section class="drop-zone" id="drop-zone">
-            <h3>Arrastra tu archivo Excel aquí</h3>
-            <p style="color: var(--text-secondary); margin-top: 5px;">O haz clic para explorar tus archivos locales</p>
-            <span style="font-size: 11px; color: var(--text-secondary); display:block; margin-top:10px;">Se procesará automáticamente la pestaña BASE_MAESTRA</span>
+            <span style="font-size: 40px; display:block; margin-bottom:10px;">📊</span>
+            <h3>Suelta tu archivo Excel aquí para iniciar</h3>
+            <p style="color: var(--text-secondary); margin-top: 5px; font-size:14px;">El motor mapeará automáticamente la pestaña <b>BASE_MAESTRA</b></p>
             <input type="file" id="file-input" accept=".xlsx, .xls, .csv" hidden>
         </section>
-        <div id="file-info" class="file-info hidden" style="margin-bottom: 20px; background: #111a2e; padding: 10px; border-radius:6px; border-left:4px solid var(--teal-tag);"></div>
+        
+        <div id="file-info" class="hidden" style="margin-bottom: 25px; background: #11203c; padding: 15px; border-radius:8px; border-left:4px solid var(--accent-blue); font-size:14px;"></div>
 
-        <div class="config-grid">
-            <div class="config-card">
-                <h2>Mapeo de Columnas (Requerido)</h2>
-                <p class="section-desc">Identifica las columnas correctas dentro de tu archivo Excel.</p>
-                
-                <form id="mapping-form">
-                    <div class="form-group"><label>Semana</label><select id="col-semana" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Tienda</label><select id="col-tienda" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Categoría</label><select id="col-categoria" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Surtido</label><select id="col-surtido" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Entrega</label><select id="col-entrega" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Clasificación</label><select id="col-clasificacion" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Fill Rate</label><select id="col-fillrate" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Departamento</label><select id="col-departamento" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>País</label><select id="col-pais" required><option>Esperando archivo...</option></select></div>
-                    <div class="form-group"><label>Subcategoría</label><select id="col-subcategoria" required><option>Esperando archivo...</option></select></div>
-                </form>
+        <div class="setup-card">
+            <h2>Personalización de Interfaz</h2>
+            
+            <div class="form-group">
+                <label>Título del Dashboard Principal</label>
+                <input type="text" id="dash-title-input" value="FILL RATE DASHBOARD">
             </div>
 
-            <div class="config-card" style="display:flex; flex-direction:column; justify-content:space-between;">
-                <div>
-                    <h2>Clasificación Dinámica de Categorías</h2>
-                    <p class="section-desc">Define tus etiquetas y edita los textos de color de manera dinámica.</p>
-                    
-                    <div class="categories-checklist" id="categories-checklist">
-                        <p style="color: var(--text-secondary); text-align:center; padding:20px 0; font-size:13px;">Carga un Excel para ver las categorías.</p>
-                    </div>
-
-                    <div class="bucket-group row-bucket">
-                        <span class="bucket-title" style="font-size:12px; font-weight:600; color:var(--text-secondary);">Bucket: Ropa</span>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px;">
-                            <input type="text" id="tag-ropa-main" value="Ropa">
-                            <div class="color-picker-wrapper">
-                                <input type="color" id="picker-color-ropa" value="#e0529c">
-                                <input type="text" id="text-color-ropa" class="color-input-editable" value="Ropa-2° rosada">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bucket-group others-bucket" style="margin-top:15px;">
-                        <span class="bucket-title" style="font-size:12px; font-weight:600; color:var(--text-secondary);">Bucket: Otros</span>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px;">
-                            <input type="text" id="tag-otros-main" value="Otros">
-                            <div class="color-picker-wrapper">
-                                <input type="color" id="picker-color-otros" value="#2bbba1">
-                                <input type="text" id="text-color-otros" class="color-input-editable" value="Gris - Otros">
-                            </div>
-                        </div>
-                    </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:20px;">
+                <div class="form-group">
+                    <label>Nombre Etiqueta Primaria</label>
+                    <input type="text" id="text-color-ropa" value="Ropa-2° rosada">
                 </div>
-
-                <div style="margin-top:25px;">
-                    <button type="button" id="btn-generate" class="btn-primary">Procesar y Generar Dashboard Real</button>
+                <div class="form-group">
+                    <label>Nombre Etiqueta Secundaria</label>
+                    <input type="text" id="text-color-otros" value="Gris - Otros">
                 </div>
             </div>
+
+            <button type="button" id="btn-generate" class="btn-primary">Construir Dashboard de Alta Gama</button>
         </div>
     </div>
 
 
-    <!-- ================= PANTALLA 2: DASHBOARD COMPLETO ================= -->
+    <!-- ================= PANTALLA 2: INTERFAZ EJECUTIVA REAL ================= -->
     <div id="pantalla-dashboard-real" class="hidden">
         
-        <!-- BARRA LATERAL -->
+        <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="brand-logo">
-                <span style="font-size:24px;">👕</span> FILL RATE
+                <span style="color:var(--accent-blue);">⚡</span> <span id="txt-brand-dinamico">FILL RATE</span>
             </div>
             
             <nav class="menu-section">
-                <div class="menu-section-title">Análisis</div>
-                <a class="menu-item active" id="btn-menu-resumen">📊 Resumen</a>
-                <a class="menu-item" id="btn-reconfigurar">⚙️ Configuración</a>
+                <div class="menu-section-title">Análisis Corporativo</div>
+                <a class="menu-item active" id="btn-menu-resumen">📊 Cuadro de Mando</a>
+                <a class="menu-item" id="btn-reconfigurar">⚙️ Cargar Otro Archivo</a>
             </nav>
 
             <nav class="menu-section">
-                <div class="menu-section-title">Por Departamento</div>
+                <div class="menu-section-title">Departamentos</div>
                 <a class="menu-item filter-dept" data-dept="Ropa">👗 Ropa</a>
                 <a class="menu-item filter-dept" data-dept="Calzado">👟 Calzado</a>
                 <a class="menu-item filter-dept" data-dept="Cartera">💼 Cartera</a>
                 <a class="menu-item filter-dept" data-dept="Hogar">🏠 Hogar</a>
                 <a class="menu-item filter-dept" data-dept="Juguetes">🧸 Juguetes</a>
             </nav>
-
-            <div style="margin-top:auto; padding:10px; background:#141f35; border-radius:6px; font-size:11px;">
-                <span style="display:block; font-weight:600;">Analista</span>
-                <span style="color:var(--text-secondary)">Oswald - Administrator</span>
-            </div>
         </aside>
 
-        <!-- PANEL CENTRAL -->
+        <!-- PANEL DE CONTENIDOS -->
         <div class="main-content">
             
-            <!-- Filtros Superiores Reactivos -->
+            <!-- FILTROS INTELIGENTES AUTOMÁTICOS -->
             <div class="top-filters-bar">
-                <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Semana</label>
-                    <select id="filter-semana" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
+                <div><label style="font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-secondary); display:block; margin-bottom:5px;">Semana</label>
+                    <select id="filter-semana"><option value="Todas">Todas</option></select>
                 </div>
-                <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">País</label>
-                    <select id="filter-pais" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
+                <div><label style="font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-secondary); display:block; margin-bottom:5px;">País</label>
+                    <select id="filter-pais"><option value="Todas">Todas</option></select>
                 </div>
-                <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Departamento</label>
-                    <select id="filter-dept-select" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
+                <div><label style="font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-secondary); display:block; margin-bottom:5px;">Departamento</label>
+                    <select id="filter-dept-select"><option value="Todas">Todas</option></select>
                 </div>
-                <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Categoría</label>
-                    <select id="filter-categoria" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
+                <div><label style="font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-secondary); display:block; margin-bottom:5px;">Categoría</label>
+                    <select id="filter-categoria"><option value="Todas">Todas</option></select>
                 </div>
-                <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Subcategoría</label>
-                    <select id="filter-subcategoria" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
+                <div><label style="font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-secondary); display:block; margin-bottom:5px;">Subcategoría</label>
+                    <select id="filter-subcategoria"><option value="Todas">Todas</option></select>
                 </div>
-                <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Tienda</label>
-                    <select id="filter-tienda" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
+                <div><label style="font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-secondary); display:block; margin-bottom:5px;">Tienda</label>
+                    <select id="filter-tienda"><option value="Todas">Todas</option></select>
                 </div>
-                <div><label style="font-size:9px; text-transform:uppercase; color:var(--text-secondary);">Clasificación</label>
-                    <select id="filter-clasificacion" style="padding:6px; font-size:11px;"><option value="Todas">Todas</option></select>
+                <div><label style="font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-secondary); display:block; margin-bottom:5px;">Clasificación</label>
+                    <select id="filter-clasificacion"><option value="Todas">Todas</option></select>
                 </div>
                 <div>
-                    <button id="btn-reset-filters" style="background:var(--bg-input); border:1px solid var(--border-color); color:white; padding:8px 12px; border-radius:6px; font-size:11px; cursor:pointer; margin-top:14px;">⚡ Reset</button>
+                    <button id="btn-reset-filters" style="background:var(--bg-input); border:1px solid var(--border-color); color:white; padding:7px 12px; border-radius:6px; font-size:11px; cursor:pointer; margin-top:14px; font-weight:600;">Reestablecer</button>
                 </div>
             </div>
 
-            <!-- Fila KPIs -->
+            <!-- TARJETAS METRICAS -->
             <div class="kpi-row">
                 <div class="kpi-card">
-                    <div class="kpi-icon-box" style="color:var(--pink-tag);">📦</div>
-                    <div class="kpi-data">
-                        <p>Surtidos</p>
-                        <h4 id="kpi-surtidos">0</h4>
-                        <div class="kpi-trend">vs sem anterior ↑ 4.21%</div>
-                    </div>
+                    <p>Surtidos Totales</p>
+                    <h4 id="kpi-surtidos">0</h4>
+                    <div class="kpi-trend">⚡ Operación Base</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-icon-box" style="color:#2563eb;">🚚</div>
-                    <div class="kpi-data">
-                        <p>Entregado (Unid.)</p>
-                        <h4 id="kpi-entregado">0</h4>
-                        <div class="kpi-trend">vs sem anterior ↑ 3.87%</div>
-                    </div>
+                    <p>Entregado (Unidades)</p>
+                    <h4 id="kpi-entregado">0</h4>
+                    <div class="kpi-trend">↑ 3.87% Rendimiento</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-icon-box" style="color:var(--teal-tag);">%</div>
-                    <div class="kpi-data">
-                        <p>Fill Rate</p>
-                        <h4 id="kpi-fillrate" style="color:var(--teal-tag)">0.00%</h4>
-                        <div class="kpi-trend">vs sem anterior ↑ 2.41%</div>
-                    </div>
+                    <p>Fill Rate Promedio</p>
+                    <h4 id="kpi-fillrate" style="color:var(--teal-tag)">0.00%</h4>
+                    <div class="kpi-trend">Eficiencia Mapeada</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-icon-box" style="color:#f59e0b;">🎯</div>
-                    <div class="kpi-data">
-                        <p>Cumplimiento</p>
-                        <h4 id="kpi-cumplimiento">0.00%</h4>
-                        <div class="kpi-trend">vs sem anterior ↑ 1.92%</div>
-                    </div>
+                    <p>Tasa Cumplimiento</p>
+                    <h4 id="kpi-cumplimiento">0.00%</h4>
+                    <div class="kpi-trend">🎯 Nivel Óptimo</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-icon-box">🏪</div>
-                    <div class="kpi-data">
-                        <p>Tiendas</p>
-                        <h4 id="kpi-tiendas">0</h4>
-                        <div class="kpi-trend" style="color:var(--text-secondary)">Establecido</div>
-                    </div>
+                    <p>Puntos de Venta (Tiendas)</p>
+                    <h4 id="kpi-tiendas">0</h4>
+                    <div class="kpi-trend" style="color:var(--text-secondary)">Cobertura Red</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-icon-box">🇸🇻</div>
-                    <div class="kpi-data">
-                        <p>País Activo</p>
-                        <h4 id="kpi-pais-activo" style="font-size:14px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">Todas</h4>
-                        <div class="kpi-trend" style="color:var(--text-secondary)">Selección</div>
-                    </div>
+                    <p>Región / País Activo</p>
+                    <h4 id="kpi-pais-activo" style="font-size:14px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">Todas</h4>
+                    <div class="kpi-trend" style="color:var(--text-secondary)">Filtro Geográfico</div>
                 </div>
             </div>
 
-            <!-- Gráficos Fila 1 -->
+            <!-- FILA GRAFICOS PROFESIONALES 1 -->
             <div class="charts-row-1">
                 <div class="panel-card">
-                    <h3>Fill Rate por Semana</h3>
-                    <div style="height:220px;"><canvas id="chart-fillrate-semana"></canvas></div>
+                    <h3>Fill Rate por Línea Temporal (Semana)</h3>
+                    <div style="height:230px;"><canvas id="chart-fillrate-semana"></canvas></div>
                 </div>
                 <div class="panel-card">
-                    <h3>Entregado (Unid.) por Subcategoría</h3>
-                    <div style="height:220px;"><canvas id="chart-donut-subcat"></canvas></div>
+                    <h3>Mix Corporativo por Subcategoría</h3>
+                    <div style="height:230px;"><canvas id="chart-donut-subcat"></canvas></div>
                 </div>
                 <div class="panel-card">
-                    <h3 id="label-dinamico-bucket">Entregado (Unid.) por Subcategoría (Ropa)</h3>
-                    <div style="height:220px;"><canvas id="chart-bars-subcat"></canvas></div>
+                    <h3 id="label-dinamico-bucket">Volumen de Entrega por Subcategoría</h3>
+                    <div style="height:230px;"><canvas id="chart-bars-subcat"></canvas></div>
                 </div>
             </div>
 
-            <!-- Gráficos Fila 2 -->
+            <!-- FILA GRAFICOS PROFESIONALES 2 -->
             <div class="charts-row-2">
                 <div class="panel-card">
-                    <h3>Top 10 Tiendas por Fill Rate</h3>
+                    <h3>Top 10 Desempeño de Tiendas</h3>
                     <table class="table-custom" id="top-tiendas-table">
                         <thead>
                             <tr>
-                                <th># Tienda</th>
-                                <th>Entregado (Unid.)</th>
+                                <th>Código Tienda</th>
+                                <th>Entregado (U)</th>
                                 <th>Fill Rate</th>
                                 <th>Cumplimiento</th>
                             </tr>
@@ -594,19 +496,19 @@
                     </table>
                 </div>
                 <div class="panel-card">
-                    <h3>Clasificación (Unid.)</h3>
-                    <div style="height:220px;"><canvas id="chart-barras-clasificacion"></canvas></div>
+                    <h3>Distribución de Clasificación</h3>
+                    <div style="height:230px;"><canvas id="chart-barras-clasificacion"></canvas></div>
                 </div>
                 <div class="panel-card">
-                    <h3>Cumplimiento por Semana</h3>
-                    <div style="height:220px;"><canvas id="chart-bars-cumplimiento"></canvas></div>
+                    <h3>Cumplimiento Histórico Semanal</h3>
+                    <div style="height:230px;"><canvas id="chart-bars-cumplimiento"></canvas></div>
                 </div>
             </div>
 
-            <!-- Detalle de Surtidos -->
-            <div class="panel-card" style="margin-top:20px;">
-                <h3>Detalle de Surtidos</h3>
-                <div style="overflow-x:auto; max-height: 400px; overflow-y: auto;">
+            <!-- DETALLE TOTAL -->
+            <div class="panel-card">
+                <h3>Auditoría Consolidada de Surtidos</h3>
+                <div style="overflow-x:auto; max-height: 350px; overflow-y: auto;">
                     <table class="table-custom" id="tabla-surtidos-detalle">
                         <thead>
                             <tr>
@@ -629,12 +531,12 @@
         </div>
     </div>
 
+    <!-- CONTROL INTELECTUAL DEL REPORTE -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const dropZone = document.getElementById('drop-zone');
             const fileInput = document.getElementById('file-input');
             const fileInfo = document.getElementById('file-info');
-            const checklistContainer = document.getElementById('categories-checklist');
             
             const pantallaConfig = document.getElementById('pantalla-configuracion');
             const pantallaDashboard = document.getElementById('pantalla-dashboard-real');
@@ -648,16 +550,15 @@
             let currentFilteredData = [];
             let mapping = {};
 
-            // Referencias a instancias de Charts de ChartJS
             let chartSemana, chartDonut, chartBarsSub, chartClasif, chartCumplimiento;
 
-            // Arrastrar y Soltar Excel
+            // Arrastrar y Soltar
             dropZone.addEventListener('click', () => fileInput.click());
             fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
 
             function handleFile(file) {
                 fileInfo.classList.remove('hidden');
-                fileInfo.textContent = `Analizando archivo: ${file.name}...`;
+                fileInfo.innerHTML = `⚙️ <b>Procesando y Automapeando:</b> ${file.name}...`;
 
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -667,130 +568,68 @@
                         let sheetName = workbook.SheetNames.find(name => name.toUpperCase() === 'BASE_MAESTRA') || workbook.SheetNames[0];
                         
                         rawExcelData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-                        if (!rawExcelData.length) throw new Error("La pestaña seleccionada no contiene registros válidos.");
+                        if (!rawExcelData.length) throw new Error("La estructura del archivo está vacía.");
 
                         const headers = Object.keys(rawExcelData[0]);
-                        fileInfo.textContent = `¡Excelente! Base cargada correctamente con ${rawExcelData.length} registros desde la pestaña "${sheetName}".`;
+                        fileInfo.innerHTML = `✅ <b>Mapeo Completado Exitosamente:</b> ${rawExcelData.length} registros estructurados desde la pestaña "${sheetName}".`;
 
-                        const selectIds = ['col-semana', 'col-tienda', 'col-categoria', 'col-surtido', 'col-entrega', 'col-clasificacion', 'col-fillrate', 'col-departamento', 'col-pais', 'col-subcategoria'];
-                        
-                        selectIds.forEach(id => {
-                            const el = document.getElementById(id);
-                            el.innerHTML = '';
-                            headers.forEach(h => {
-                                const opt = document.createElement('option');
-                                opt.value = h; opt.textContent = h;
-                                const matchKeyword = id.replace('col-', '').toLowerCase();
-                                if (h.toLowerCase().includes(matchKeyword)) opt.selected = true;
-                                el.appendChild(opt);
-                            });
-                        });
+                        // MAPEO INTELIGENTE EN SEGUNDO PLANO (Sin intervención del usuario)
+                        const buscarColumna = (claves) => {
+                            return headers.find(h => claves.some(c => h.toLowerCase().includes(c.toLowerCase()))) || headers[0];
+                        };
 
-                        // Categorías Únicas Checklist
-                        const colCat = document.getElementById('col-categoria').value;
-                        const cats = [...new Set(rawExcelData.map(r => r[colCat]).filter(Boolean))];
-                        checklistContainer.innerHTML = '';
-                        cats.slice(0, 8).forEach(cat => {
-                            const lbl = document.createElement('label'); lbl.className = 'check-item';
-                            const chk = document.createElement('input'); chk.type = 'checkbox';
-                            chk.checked = cat.toString().toUpperCase().includes('ROPA');
-                            lbl.appendChild(chk); lbl.appendChild(document.createTextNode(cat));
-                            checklistContainer.appendChild(lbl);
-                        });
+                        mapping = {
+                            semana: buscarColumna(['semana', 'sem', 'week']),
+                            tienda: buscarColumna(['tienda', 'store', 'sucursal']),
+                            categoria: buscarColumna(['categoria', 'category']),
+                            surtido: buscarColumna(['surtido', 'assortment', 'codigo']),
+                            entrega: buscarColumna(['entrega', 'entregado', 'unidades', 'qty']),
+                            clasificacion: buscarColumna(['clasificacion', 'clase', 'status']),
+                            fillrate: buscarColumna(['fill rate', 'fillrate', 'fr', 'cumplimiento %']),
+                            departamento: buscarColumna(['departamento', 'depto', 'dept']),
+                            pais: buscarColumna(['pais', 'country', 'region']),
+                            subcategoria: buscarColumna(['subcategoria', 'subcat', 'sub category'])
+                        };
 
                     } catch (err) {
-                        fileInfo.textContent = `Error: ${err.message}`;
+                        fileInfo.innerHTML = `❌ <b>Error de Lectura:</b> ${err.message}`;
                     }
                 };
                 reader.readAsArrayBuffer(file);
             }
 
-            // PROCESAR Y CAMBIAR A PANTALLA DASHBOARD
             btnGenerate.addEventListener('click', () => {
                 if(!rawExcelData.length) {
-                    alert("Por favor carga un archivo Excel antes de continuar.");
+                    alert("Por favor arrastra o selecciona un archivo Excel válido primero.");
                     return;
                 }
 
-                // Generar objeto de mapeo
-                mapping = {
-                    semana: document.getElementById('col-semana').value,
-                    tienda: document.getElementById('col-tienda').value,
-                    categoria: document.getElementById('col-categoria').value,
-                    surtido: document.getElementById('col-surtido').value,
-                    entrega: document.getElementById('col-entrega').value,
-                    clasificacion: document.getElementById('col-clasificacion').value,
-                    fillrate: document.getElementById('col-fillrate').value,
-                    departamento: document.getElementById('col-departamento').value,
-                    pais: document.getElementById('col-pais').value,
-                    subcategoria: document.getElementById('col-subcategoria').value
-                };
+                // Inyectar títulos dinámicos personalizados
+                const customTitle = document.getElementById('dash-title-input').value;
+                document.getElementById('txt-brand-dinamico').textContent = customTitle;
 
-                // Cambiar títulos dinámicos con etiquetas del usuario
                 const labelRopa = document.getElementById('text-color-ropa').value;
-                document.getElementById('label-dinamico-bucket').textContent = `Entregado (Unid.) por Subcategoría (${labelRopa})`;
+                document.getElementById('label-dinamico-bucket').textContent = `Volumen de Entrega por Subcategoría (${labelRopa})`;
 
-                // Configurar opciones de filtros superiores basadas en los datos reales del excel
+                // Configurar Selectores
                 cargarOpcionesFiltros();
 
-                // Inicializar visualización del Dashboard
                 pantallaConfig.classList.add('hidden');
                 pantallaDashboard.classList.remove('hidden');
 
                 filtrarYActualizar();
             });
 
-            // Volver a Configuración
             btnReconfig.addEventListener('click', () => {
                 pantallaDashboard.classList.add('hidden');
                 pantallaConfig.classList.remove('hidden');
             });
 
-            btnResumen.addEventListener('click', () => {
-                resetTodosLosFiltros();
-            });
-
-            // Acciones de Filtro en Sidebar (Ropa, Calzado, Cartera...)
-            document.querySelectorAll('.filter-dept').forEach(elem => {
-                elem.addEventListener('click', (e) => {
-                    document.querySelectorAll('.filter-dept').forEach(x => x.classList.remove('active'));
-                    elem.classList.add('active');
-                    const deptValue = elem.getAttribute('data-dept');
-                    
-                    // Sincronizar el dropdown de departamento
-                    const selectDept = document.getElementById('filter-dept-select');
-                    const optionToSelect = [...selectDept.options].find(o => o.value.toLowerCase() === deptValue.toLowerCase());
-                    if(optionToSelect) {
-                        selectDept.value = optionToSelect.value;
-                    } else {
-                        selectDept.value = "Todas";
-                    }
-                    filtrarYActualizar();
-                });
-            });
-
-            // Escuchar cambios de filtros superiores
-            const filtrosIds = ['filter-semana', 'filter-pais', 'filter-dept-select', 'filter-categoria', 'filter-subcategoria', 'filter-tienda', 'filter-clasificacion'];
-            filtrosIds.forEach(id => {
-                document.getElementById(id).addEventListener('change', () => {
-                    if (id === 'filter-dept-select') {
-                        // Sincronizar el menú lateral si se cambia desde el select
-                        const deptVal = document.getElementById(id).value.toLowerCase();
-                        document.querySelectorAll('.filter-dept').forEach(x => {
-                            if(x.getAttribute('data-dept').toLowerCase() === deptVal) {
-                                x.classList.add('active');
-                            } else {
-                                x.classList.remove('active');
-                            }
-                        });
-                    }
-                    filtrarYActualizar();
-                });
-            });
-
+            btnResumen.addEventListener('click', resetTodosLosFiltros);
             btnReset.addEventListener('click', resetTodosLosFiltros);
 
             function resetTodosLosFiltros() {
+                const filtrosIds = ['filter-semana', 'filter-pais', 'filter-dept-select', 'filter-categoria', 'filter-subcategoria', 'filter-tienda', 'filter-clasificacion'];
                 filtrosIds.forEach(id => document.getElementById(id).value = "Todas");
                 document.querySelectorAll('.filter-dept').forEach(x => x.classList.remove('active'));
                 filtrarYActualizar();
@@ -817,7 +656,6 @@
                 llenarSelect('filter-clasificacion', mapping.clasificacion);
             }
 
-            // CORE: Filtrar los datos y redibujar todos los paneles
             function filtrarYActualizar() {
                 const filterSem = document.getElementById('filter-semana').value;
                 const filterPa = document.getElementById('filter-pais').value;
@@ -827,7 +665,6 @@
                 const filterTie = document.getElementById('filter-tienda').value;
                 const filterClas = document.getElementById('filter-clasificacion').value;
 
-                // Filtrar matriz de datos real
                 currentFilteredData = rawExcelData.filter(row => {
                     if (filterSem !== "Todas" && String(row[mapping.semana]) !== filterSem) return false;
                     if (filterPa !== "Todas" && String(row[mapping.pais]) !== filterPa) return false;
@@ -839,140 +676,136 @@
                     return true;
                 });
 
-                // 1. Recalcular KPIs
-                actualizarKPIs(filterPa);
-
-                // 2. Dibujar Gráficos Dinámicos
-                actualizarGraficos();
-
-                // 3. Rellenar Tablas
-                actualizarTablas();
-            }
-
-            function actualizarKPIs(paisSeleccionado) {
+                // KPIs
                 const totalSurtido = currentFilteredData.length;
-                let totalEntregado = 0;
-                let sumFillRate = 0;
-                let sumCumplimiento = 0;
+                let totalEntregado = 0, sumFillRate = 0, sumCumplimiento = 0;
                 const tiendasUnicas = new Set();
 
                 currentFilteredData.forEach(row => {
                     totalEntregado += Number(row[mapping.entrega]) || 0;
                     sumFillRate += parseFloat(row[mapping.fillrate]) || 0;
-                    sumCumplimiento += row[mapping.clasificacion] === "Completa" ? 1 : 0;
+                    if(row[mapping.clasificacion] === "Completa") sumCumplimiento++;
                     if(row[mapping.tienda]) tiendasUnicas.add(row[mapping.tienda]);
                 });
 
-                const frGlobal = totalSurtido ? (sumFillRate / totalSurtido) : 0;
-                const cumpliGlobal = totalSurtido ? (sumCumplimiento / totalSurtido) * 100 : 0;
-
                 document.getElementById('kpi-surtidos').textContent = totalSurtido.toLocaleString();
                 document.getElementById('kpi-entregado').textContent = totalEntregado.toLocaleString();
-                document.getElementById('kpi-fillrate').textContent = `${frGlobal.toFixed(2)}%`;
-                document.getElementById('kpi-cumplimiento').textContent = `${cumpliGlobal.toFixed(2)}%`;
+                document.getElementById('kpi-fillrate').textContent = `${(totalSurtido ? sumFillRate/totalSurtido : 0).toFixed(2)}%`;
+                document.getElementById('kpi-cumplimiento').textContent = `${(totalSurtido ? (sumCumplimiento/totalSurtido)*100 : 0).toFixed(2)}%`;
                 document.getElementById('kpi-tiendas').textContent = tiendasUnicas.size;
-                document.getElementById('kpi-pais-activo').textContent = paisSeleccionado;
+                document.getElementById('kpi-pais-activo').textContent = filterPa;
+
+                actualizarGraficosAltaGama();
+                actualizarTablas();
             }
 
-            function actualizarGraficos() {
+            function actualizarGraficosAltaGama() {
                 const labelRopa = document.getElementById('text-color-ropa').value;
 
-                // A. Agrupación por semana
+                // Procesamiento temporal
                 const semanasMap = {};
                 currentFilteredData.forEach(r => {
                     const sem = r[mapping.semana];
                     if(!semanasMap[sem]) semanasMap[sem] = { totalFr: 0, count: 0, cumplido: 0 };
                     semanasMap[sem].totalFr += parseFloat(r[mapping.fillrate]) || 0;
-                    semanasMap[sem].count += 1;
-                    if(r[mapping.clasificacion] === "Completa") semanasMap[sem].cumplido += 1;
+                    semanasMap[sem].count++;
+                    if(r[mapping.clasificacion] === "Completa") semanasMap[sem].cumplido++;
                 });
                 const ordenSemanas = Object.keys(semanasMap).sort();
-                const frSemanasValues = ordenSemanas.map(s => (semanasMap[s].totalFr / semanasMap[s].count).toFixed(2));
-                const cumpliSemanasValues = ordenSemanas.map(s => ((semanasMap[s].cumplido / semanasMap[s].count) * 100).toFixed(2));
+                const frValues = ordenSemanas.map(s => (semanasMap[s].totalFr / semanasMap[s].count).toFixed(2));
+                const cValues = ordenSemanas.map(s => ((semanasMap[s].cumplido / semanasMap[s].count) * 100).toFixed(2));
 
-                // Redibujar Gráfico 1: Fill Rate por Semana
+                // 1. Gráfico Lineal Profesional con Gradiente Estilizado
                 if(chartSemana) chartSemana.destroy();
-                chartSemana = new Chart(document.getElementById('chart-fillrate-semana'), {
+                const ctxSemana = document.getElementById('chart-fillrate-semana').getContext('2d');
+                const gradientBlue = ctxSemana.createLinearGradient(0, 0, 0, 200);
+                gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+                gradientBlue.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+                chartSemana = new Chart(ctxSemana, {
                     type: 'line',
                     data: {
-                        labels: ordenSemanas.length ? ordenSemanas : ['Sin datos'],
+                        labels: ordenSemanas,
                         datasets: [{
-                            data: frSemanasValues.length ? frSemanasValues : [0],
-                            borderColor: '#2563eb',
-                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            data: frValues,
+                            borderColor: '#3b82f6',
+                            borderWidth: 3,
+                            backgroundColor: gradientBlue,
                             fill: true,
-                            tension: 0.3
+                            tension: 0.35,
+                            pointBackgroundColor: '#ffffff',
+                            pointHoverRadius: 7
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                 });
 
-                // B. Donut y Barras de Subcategorías
+                // 2. Mix de subcategorías (Donut con bordes elegantes)
                 const subcatMap = {};
                 currentFilteredData.forEach(r => {
                     const sub = r[mapping.subcategoria];
-                    if(sub) {
-                        subcatMap[sub] = (subcatMap[sub] || 0) + (Number(r[mapping.entrega]) || 0);
-                    }
+                    if(sub) subcatMap[sub] = (subcatMap[sub] || 0) + (Number(r[mapping.entrega]) || 0);
                 });
-                const subcatLabels = Object.keys(subcatMap).slice(0, 5);
-                const subcatValues = subcatLabels.map(s => subcatMap[s]);
+                const subLabels = Object.keys(subcatMap).slice(0, 5);
 
                 if(chartDonut) chartDonut.destroy();
                 chartDonut = new Chart(document.getElementById('chart-donut-subcat'), {
                     type: 'doughnut',
                     data: {
-                        labels: subcatLabels.length ? subcatLabels : ['Sin datos'],
+                        labels: subLabels,
                         datasets: [{
-                            data: subcatValues.length ? subcatValues : [0],
-                            backgroundColor: ['#e0529c', '#2563eb', '#10b981', '#f59e0b', '#7c3aed']
+                            data: subLabels.map(s => subcatMap[s]),
+                            backgroundColor: ['#e0529c', '#3b82f6', '#14b8a6', '#f59e0b', '#8b5cf6'],
+                            borderWidth: 2,
+                            borderColor: '#0f182c'
                         }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#7e95c3' } } } }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#748ba7' } } } }
                 });
 
+                // 3. Gráfico de Barras Horizontales Premium
                 if(chartBarsSub) chartBarsSub.destroy();
                 chartBarsSub = new Chart(document.getElementById('chart-bars-subcat'), {
                     type: 'bar',
                     data: {
-                        labels: subcatLabels.map(label => label.toLowerCase().includes('ropa') ? `${label} (${labelRopa})` : label),
+                        labels: subLabels.map(l => l.toLowerCase().includes('ropa') ? `${l} (${labelRopa})` : l),
                         datasets: [{
-                            data: subcatValues,
-                            backgroundColor: '#2563eb'
+                            data: subLabels.map(s => subcatMap[s]),
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 5
                         }]
                     },
                     options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                 });
 
-                // C. Clasificación
-                const clasifMap = { Overfilled: 0, Completa: 0, Básico: 0, Undersized: 0 };
-                currentFilteredData.forEach(r => {
-                    const cl = r[mapping.clasificacion];
-                    if(cl && cl in clasifMap) clasifMap[cl]++;
-                });
+                // 4. Distribución de Clasificaciones
+                const clMap = { Overfilled: 0, Completa: 0, Básico: 0, Undersized: 0 };
+                currentFilteredData.forEach(r => { const c = r[mapping.clasificacion]; if(c in clMap) clMap[c]++; });
 
                 if(chartClasif) chartClasif.destroy();
                 chartClasif = new Chart(document.getElementById('chart-barras-clasificacion'), {
                     type: 'bar',
                     data: {
-                        labels: Object.keys(clasifMap),
+                        labels: Object.keys(clMap),
                         datasets: [{
-                            data: Object.values(clasifMap),
-                            backgroundColor: ['#2bbba1', '#2563eb', '#f59e0b', '#ef4444']
+                            data: Object.values(clMap),
+                            backgroundColor: ['#14b8a6', '#3b82f6', '#f59e0b', '#ef4444'],
+                            borderRadius: 5
                         }]
                     },
                     options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                 });
 
-                // D. Cumplimiento por Semana
+                // 5. Histórico Semanal de Cumplimiento
                 if(chartCumplimiento) chartCumplimiento.destroy();
                 chartCumplimiento = new Chart(document.getElementById('chart-bars-cumplimiento'), {
                     type: 'bar',
                     data: {
-                        labels: ordenSemanas.length ? ordenSemanas : ['Sin Datos'],
+                        labels: ordenSemanas,
                         datasets: [{
-                            data: cumpliSemanasValues.length ? cumpliSemanasValues : [0],
-                            backgroundColor: '#10b981'
+                            data: cValues,
+                            backgroundColor: '#10b981',
+                            borderRadius: 4
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
@@ -980,54 +813,39 @@
             }
 
             function actualizarTablas() {
-                // Top 10 Tiendas
                 const tiendasMap = {};
                 currentFilteredData.forEach(r => {
                     const tie = r[mapping.tienda];
-                    if(!tiendasMap[tie]) tiendasMap[tie] = { entregado: 0, sumFr: 0, compliCount: 0, total: 0 };
+                    if(!tiendasMap[tie]) tiendasMap[tie] = { entregado: 0, sumFr: 0, compli: 0, total: 0 };
                     tiendasMap[tie].entregado += Number(r[mapping.entrega]) || 0;
                     tiendasMap[tie].sumFr += parseFloat(r[mapping.fillrate]) || 0;
-                    tiendasMap[tie].total += 1;
-                    if(r[mapping.clasificacion] === "Completa") tiendasMap[tie].compliCount++;
+                    tiendasMap[tie].total++;
+                    if(r[mapping.clasificacion] === "Completa") tiendasMap[tie].compli++;
                 });
 
-                const sortedTiendas = Object.keys(tiendasMap).map(name => {
-                    const info = tiendasMap[name];
-                    return {
-                        name,
-                        entregado: info.entregado,
-                        fillrate: (info.sumFr / info.total),
-                        cumplimiento: ((info.compliCount / info.total) * 100)
-                    };
-                }).sort((a, b) => b.fillrate - a.fillrate).slice(0, 10);
+                const topTiendas = Object.keys(tiendasMap).map(k => ({
+                    name: k,
+                    entregado: tiendasMap[k].entregado,
+                    fr: tiendasMap[k].sumFr / tiendasMap[k].total,
+                    cp: (tiendasMap[k].compli / tiendasMap[k].total) * 100
+                })).sort((a,b) => b.fr - a.fr).slice(0, 10);
 
                 const topBody = document.querySelector('#top-tiendas-table tbody');
                 topBody.innerHTML = '';
-                if(!sortedTiendas.length) {
-                    topBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin registros en esta vista</td></tr>';
-                }
-                sortedTiendas.forEach(item => {
+                topTiendas.forEach(t => {
                     const r = document.createElement('tr');
-                    r.innerHTML = `<td>${item.name}</td><td>${item.entregado.toLocaleString()}</td><td style="color:var(--teal-tag); font-weight:700;">${item.fillrate.toFixed(2)}%</td><td>${item.cumplimiento.toFixed(2)}%</td>`;
+                    r.innerHTML = `<td>${t.name}</td><td>${t.entregado.toLocaleString()}</td><td style="color:var(--teal-tag); font-weight:700;">${t.fr.toFixed(2)}%</td><td>${t.cp.toFixed(2)}%</td>`;
                     topBody.appendChild(r);
                 });
 
-                // Detalle Surtidos (Tabla inferior)
                 const detBody = document.querySelector('#tabla-surtidos-detalle tbody');
                 detBody.innerHTML = '';
-                const limitRows = currentFilteredData.slice(0, 25);
-                if(!limitRows.length) {
-                    detBody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Ningún registro para mostrar</td></tr>';
-                }
-                limitRows.forEach(item => {
+                currentFilteredData.slice(0, 20).forEach(item => {
                     const r = document.createElement('tr');
                     r.innerHTML = `
-                        <td>${item[mapping.semana] || ''}</td>
-                        <td>${item[mapping.tienda] || ''}</td>
-                        <td>${item[mapping.departamento] || ''}</td>
-                        <td>${item[mapping.categoria] || ''}</td>
-                        <td>${item[mapping.subcategoria] || ''}</td>
-                        <td>${item[mapping.surtido] || ''}</td>
+                        <td>${item[mapping.semana] || ''}</td><td>${item[mapping.tienda] || ''}</td>
+                        <td>${item[mapping.departamento] || ''}</td><td>${item[mapping.categoria] || ''}</td>
+                        <td>${item[mapping.subcategoria] || ''}</td><td>${item[mapping.surtido] || ''}</td>
                         <td>${(Number(item[mapping.entrega]) || 0).toLocaleString()}</td>
                         <td style="color:var(--teal-tag); font-weight:700;">${(parseFloat(item[mapping.fillrate]) || 0).toFixed(2)}%</td>
                         <td><span class="badge-pill badge-complete">${item[mapping.clasificacion] || ''}</span></td>

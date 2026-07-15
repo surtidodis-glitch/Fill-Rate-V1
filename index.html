@@ -339,7 +339,6 @@
                     <span>📦 Todos</span>
                     <span>➔</span>
                 </div>
-                <!-- Se inyectarán dinámicamente desde el Excel los Departamentos de tu archivo -->
             </nav>
 
             <div style="margin-top: auto; padding-top: 20px;">
@@ -451,7 +450,6 @@
             
             let datasetRaw = [];
             let datasetFiltered = [];
-            let headerMapping = {};
             let chartTiendasInst = null;
             let chartDonutInst = null;
             let activeDepartment = "Todos";
@@ -470,48 +468,64 @@
                         const buffer = new Uint8Array(e.target.result);
                         const libro = XLSX.read(buffer, { type: 'array' });
                         
-                        // Localizar BASE_MAESTRA de forma tolerante
                         let nombrePestana = libro.SheetNames.find(n => n.toUpperCase() === 'BASE_MAESTRA') || libro.SheetNames[0];
                         const hoja = libro.Sheets[nombrePestana];
                         
-                        // Convertir a matriz bidimensional para limpiar cabeceras vacías de Excel
+                        // Convertir a matriz bidimensional
                         const matriz = XLSX.utils.sheet_to_json(hoja, { header: 1 });
                         
-                        // Buscar la fila donde se ubican los encabezados reales
-                        let filaEncabezado = 0;
+                        // Localizar la fila de encabezados buscando 'SEMANA'
+                        let filaEncabezadoIdx = -1;
                         for (let i = 0; i < matriz.length; i++) {
                             const fila = matriz[i];
-                            if (fila.some(celda => celda && String(celda).toUpperCase().includes('SEMANA'))) {
-                                filaEncabezado = i;
+                            if (fila && fila.some(celda => celda && String(celda).toUpperCase().trim() === 'SEMANA')) {
+                                filaEncabezadoIdx = i;
                                 break;
                             }
                         }
 
-                        // Parsear datos a JSON a partir del índice detectado
-                        datasetRaw = XLSX.utils.sheet_to_json(hoja, { range: filaEncabezado });
+                        if (filaEncabezadoIdx === -1) {
+                            throw new Error("No se encontró la columna 'SEMANA' en el archivo para usarla como cabecera.");
+                        }
+
+                        const headersSucios = matriz[filaEncabezadoIdx];
+                        
+                        // Mapeo robusto de columnas ignorando mayúsculas, espacios y tildes
+                        const normalizarTexto = str => String(str || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+                        // Construimos los objetos manualmente garantizando las propiedades correctas
+                        datasetRaw = [];
+                        for (let i = filaEncabezadoIdx + 1; i < matriz.length; i++) {
+                            const filaValores = matriz[i];
+                            if (!filaValores || filaValores.length === 0) continue;
+
+                            let filaObj = {};
+                            headersSucios.forEach((h, colIndex) => {
+                                if (!h) return;
+                                const hNorm = normalizarTexto(h);
+                                const valorCelda = filaValores[colIndex];
+
+                                // Asignación de propiedades normalizadas
+                                if (hNorm === 'semana') filaObj.semana = valorCelda;
+                                else if (hNorm === 'tienda') filaObj.tienda = valorCelda;
+                                else if (hNorm === 'categoria') filaObj.categoria = valorCelda;
+                                else if (hNorm === 'surtido') filaObj.surtido = Number(valorCelda) || 0;
+                                else if (hNorm === 'entrega') filaObj.entrega = Number(valorCelda) || 0;
+                                else if (hNorm === 'clasificacion') filaObj.clasificacion = valorCelda;
+                                else if (hNorm === 'departamento') filaObj.departamento = valorCelda;
+                                else if (hNorm === 'pais') filaObj.pais = valorCelda;
+                                else if (hNorm === 'subcategoria') filaObj.subcategoria = valorCelda;
+                            });
+
+                            // Ignorar filas completamente vacías
+                            if (Object.keys(filaObj).length > 0) {
+                                datasetRaw.push(filaObj);
+                            }
+                        }
+
                         if(!datasetRaw.length) throw new Error("No hay registros legibles.");
 
-                        const columnas = Object.keys(datasetRaw[0]);
-
-                        // Enlace automático inteligente de cabeceras
-                        const vincular = (patrones) => {
-                            return columnas.find(col => patrones.some(patron => col.toUpperCase().includes(patron.toUpperCase()))) || columnas[0];
-                        };
-
-                        headerMapping = {
-                            semana: vincular(['SEMANA', 'SEM']),
-                            tienda: vincular(['TIENDA', 'SUCURSAL', 'STORE']),
-                            categoria: vincular(['CATEGORÍA', 'CATEGORIA', 'CAT']),
-                            surtido: vincular(['SURTIDO', 'ASSORTMENT']),
-                            entrega: vincular(['ENTREGA', 'ENTREGADO', 'QTY']),
-                            clasificacion: vincular(['CLASIFICACIÓN', 'CLASIFICACION', 'STATUS']),
-                            fillrate: vincular(['FILL RATE', 'FILLRATE', 'FR']),
-                            departamento: vincular(['DEPARTAMENTO', 'DEPTO', 'DEPT']),
-                            pais: vincular(['PAÍS', 'PAIS', 'COUNTRY']),
-                            subcategoria: vincular(['SUBCATEGORÍA', 'SUBCATEGORIA', 'SUBCAT'])
-                        };
-
-                        fileFeedback.innerHTML = `✅ <b>¡Lectura éxitosa!</b> Se mapearon automáticamente ${datasetRaw.length} filas desde "${nombrePestana}".`;
+                        fileFeedback.innerHTML = `✅ <b>¡Lectura exitosa!</b> Se mapearon automáticamente ${datasetRaw.length} filas desde "${nombrePestana}".`;
 
                     } catch(err) {
                         fileFeedback.innerHTML = `❌ <b>Error de procesamiento:</b> ${err.message}. Verifica el formato del archivo.`;
@@ -545,31 +559,30 @@
                 configScreen.classList.remove('hidden');
             });
 
-            // Configuración dinámica de Selectores
+            // Configuración dinámica de Selectores con nombres fijos correctos
             function configurarSelectores() {
-                const llenarCombo = (idSelector, columnaExcel) => {
+                const llenarCombo = (idSelector, propiedadObjeto, etiqueta) => {
                     const combo = document.getElementById(idSelector);
-                    const etiquetaBase = combo.options[0].text.split(':')[0];
-                    combo.innerHTML = `<option value="Todos">${etiquetaBase}: Todos</option>`;
+                    combo.innerHTML = `<option value="Todos">${etiqueta}: Todos</option>`;
                     
-                    const unicos = [...new Set(datasetRaw.map(r => r[columnaExcel]).filter(Boolean))].sort();
+                    const unicos = [...new Set(datasetRaw.map(r => r[propiedadObjeto]).filter(Boolean))].sort();
                     unicos.forEach(val => {
                         const opt = document.createElement('option');
                         opt.value = val;
-                        opt.textContent = `${etiquetaBase}: ${val}`;
+                        opt.textContent = `${etiqueta}: ${val}`;
                         combo.appendChild(opt);
                     });
                 };
 
-                llenarCombo('sel-semana', headerMapping.semana);
-                llenarCombo('sel-pais', headerMapping.pais);
-                llenarCombo('sel-tienda', headerMapping.tienda);
-                llenarCombo('sel-categoria', headerMapping.categoria);
-                llenarCombo('sel-subcategoria', headerMapping.subcategoria);
-                llenarCombo('sel-clasificacion', headerMapping.clasificacion);
+                llenarCombo('sel-semana', 'semana', 'Semana');
+                llenarCombo('sel-pais', 'pais', 'País');
+                llenarCombo('sel-tienda', 'tienda', 'Tienda');
+                llenarCombo('sel-categoria', 'categoria', 'Categoría');
+                llenarCombo('sel-subcategoria', 'subcategoria', 'Subcategoría');
+                llenarCombo('sel-clasificacion', 'clasificacion', 'Clasificación');
             }
 
-            // Menú izquierdo Dinámico de Departamentos
+            // Menú izquierdo de Departamentos (Ahora lee "departamento" real y no "semana")
             function configurarMenuDepartamentos() {
                 const menuContenedor = document.getElementById('dept-menu-list');
                 menuContenedor.innerHTML = `
@@ -579,7 +592,7 @@
                     </div>
                 `;
 
-                const deptoUnicos = [...new Set(datasetRaw.map(r => r[headerMapping.departamento]).filter(Boolean))].sort();
+                const deptoUnicos = [...new Set(datasetRaw.map(r => r.departamento).filter(Boolean))].sort();
                 deptoUnicos.forEach(dep => {
                     const deptoDiv = document.createElement('div');
                     deptoDiv.className = "nav-item";
@@ -603,7 +616,7 @@
                 });
             }
 
-            // Aplicación de Filtros en Cascada
+            // Filtros en Cascada
             function actualizarDashboard() {
                 const fSemana = document.getElementById('sel-semana').value;
                 const fPais = document.getElementById('sel-pais').value;
@@ -615,21 +628,21 @@
 
                 datasetFiltered = datasetRaw.filter(fila => {
                     // Filtro de Departamento (Sidebar)
-                    if (activeDepartment !== "Todos" && String(fila[headerMapping.departamento]) !== activeDepartment) return false;
+                    if (activeDepartment !== "Todos" && String(fila.departamento || '') !== activeDepartment) return false;
                     
                     // Filtros Rápidos
-                    if (fSemana !== "Todos" && String(fila[headerMapping.semana]) !== fSemana) return false;
-                    if (fPais !== "Todos" && String(fila[headerMapping.pais]) !== fPais) return false;
-                    if (fTienda !== "Todos" && String(fila[headerMapping.tienda]) !== fTienda) return false;
-                    if (fCategoria !== "Todos" && String(fila[headerMapping.categoria]) !== fCategoria) return false;
-                    if (fSubcat !== "Todos" && String(fila[headerMapping.subcategoria]) !== fSubcat) return false;
-                    if (fClasif !== "Todos" && String(fila[headerMapping.clasificacion]) !== fClasif) return false;
+                    if (fSemana !== "Todos" && String(fila.semana || '') !== fSemana) return false;
+                    if (fPais !== "Todos" && String(fila.pais || '') !== fPais) return false;
+                    if (fTienda !== "Todos" && String(fila.tienda || '') !== fTienda) return false;
+                    if (fCategoria !== "Todos" && String(fila.categoria || '') !== fCategoria) return false;
+                    if (fSubcat !== "Todos" && String(fila.subcategoria || '') !== fSubcat) return false;
+                    if (fClasif !== "Todos" && String(fila.clasificacion || '') !== fClasif) return false;
 
                     // Barra de Búsqueda inteligente
                     if(queryText) {
-                        const matchesTienda = String(fila[headerMapping.tienda] || '').toLowerCase().includes(queryText);
-                        const matchesCat = String(fila[headerMapping.categoria] || '').toLowerCase().includes(queryText);
-                        const matchesSubcat = String(fila[headerMapping.subcategoria] || '').toLowerCase().includes(queryText);
+                        const matchesTienda = String(fila.tienda || '').toLowerCase().includes(queryText);
+                        const matchesCat = String(fila.categoria || '').toLowerCase().includes(queryText);
+                        const matchesSubcat = String(fila.subcategoria || '').toLowerCase().includes(queryText);
                         if (!matchesTienda && !matchesCat && !matchesSubcat) return false;
                     }
 
@@ -647,10 +660,10 @@
                 const setPaises = new Set();
 
                 datasetFiltered.forEach(fila => {
-                    totalSurtido += Number(fila[headerMapping.surtido]) || 0;
-                    totalEntregado += Number(fila[headerMapping.entrega]) || 0;
-                    if(fila[headerMapping.tienda]) setTiendas.add(fila[headerMapping.tienda]);
-                    if(fila[headerMapping.pais]) setPaises.add(fila[headerMapping.pais]);
+                    totalSurtido += Number(fila.surtido) || 0;
+                    totalEntregado += Number(fila.entrega) || 0;
+                    if(fila.tienda) setTiendas.add(fila.tienda);
+                    if(fila.pais) setPaises.add(fila.pais);
                 });
 
                 const cumplimiento = totalSurtido ? Math.round((totalEntregado / totalSurtido) * 100) : 0;
@@ -663,12 +676,12 @@
             }
 
             function renderizarGraficos() {
-                // --- PROCESAMIENTO TOP 10 TIENDAS ---
+                // --- TOP 10 TIENDAS ---
                 const tiendasConsolidado = {};
                 datasetFiltered.forEach(f => {
-                    const t = f[headerMapping.tienda];
+                    const t = f.tienda;
                     if(t) {
-                        tiendasConsolidado[t] = (tiendasConsolidado[t] || 0) + (Number(f[headerMapping.entrega]) || 0);
+                        tiendasConsolidado[t] = (tiendasConsolidado[t] || 0) + (Number(f.entrega) || 0);
                     }
                 });
 
@@ -706,13 +719,13 @@
                     }
                 });
 
-                // --- PROCESAMIENTO CATEGORÍAS (DONUT) ---
+                // --- CATEGORÍAS (DONUT) ---
                 const catConsolidado = {};
                 let sumaTotalDonut = 0;
                 datasetFiltered.forEach(f => {
-                    const c = f[headerMapping.categoria];
+                    const c = f.categoria;
                     if(c) {
-                        const val = (Number(f[headerMapping.entrega]) || 0);
+                        const val = (Number(f.entrega) || 0);
                         catConsolidado[c] = (catConsolidado[c] || 0) + val;
                         sumaTotalDonut += val;
                     }
@@ -723,7 +736,6 @@
                     entrega: catConsolidado[k]
                 })).sort((a,b) => b.entrega - a.entrega);
 
-                // Conservar top 5 y agrupar el resto como "Otras"
                 const topCats = arrayCats.slice(0, 5);
                 const restoSuma = arrayCats.slice(5).reduce((acc, curr) => acc + curr.entrega, 0);
                 if (restoSuma > 0) {
@@ -777,7 +789,7 @@
                 }
             }
 
-            // Reestablecer Filtros
+            // Restablecer Filtros
             document.getElementById('btn-reset-all').addEventListener('click', () => {
                 document.getElementById('sel-semana').value = "Todos";
                 document.getElementById('sel-pais').value = "Todos";
@@ -789,7 +801,7 @@
                 actualizarDashboard();
             });
 
-            // Listeners automáticos al cambiar cualquier filtro
+            // Listeners automáticos
             const selectores = ['sel-semana', 'sel-pais', 'sel-tienda', 'sel-categoria', 'sel-subcategoria', 'sel-clasificacion'];
             selectores.forEach(id => document.getElementById(id).addEventListener('change', actualizarDashboard));
             document.getElementById('txt-search').addEventListener('input', actualizarDashboard);
